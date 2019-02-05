@@ -62,7 +62,7 @@ typedef struct _game{
  * The program start on Init mode
  * user can load a file for Edit or Solve mode
  * Default for error is TRUE
- * The redo/undo list is cleared
+ * The redo/undo list is empty
  */
 Game* game_init();
 

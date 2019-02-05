@@ -11,8 +11,35 @@
 #include "main_aux.h"
 
 
-
 char delimit[]=" \t\r\v\f\n";
+
+/**
+ * INIT=0, SOLVE=1, EDIT=2
+ */
+bool solveM[] = {1, 1, 1};
+bool editM[] = {1, 1, 1};
+bool change_mark_errorsM[] = {0, 1, 0};
+bool printBoardM[]={0,1,1};
+bool setM[]={0,1,1};
+bool validateM[] = {0,1,1};
+bool guessM[] ={0,1,0};
+bool generateM[]={0,0,1};
+bool undoM[]={0,1,1};
+bool redoM[]={0,1,1};
+bool autofillM[]={0,1,0};
+bool hintM[]={0,1,0};
+bool saveM[]={0,1,1};
+bool num_of_solutionsM[]={0,1,1};
+bool guess_hintM[]={0,1,0};
+bool resetM[]={0,1,1};
+bool exitM[] = {1, 1, 1};
+
+ADTErr checkMode(bool cmdM[3], MODE mode){
+	if(cmdM[mode]==TRUE){
+		return ERR_OK;
+	}
+	return COMMAND_NOT_AVAILABLE_INCURRENT_MODE;
+}
 
 bool isNumber(char* input){
 	int i;
@@ -121,73 +148,111 @@ ADTErr parcer_doCommand(Game* _game, char* _command){
 	if(tokens != NULL)
 	{
 		if (!strcmp(tokens,"validate")) {
-			ret = validate(_game);
+			if((ret=checkMode(validateM,_game->mode))==ERR_OK){
+				ret = validate(_game);
+			}
 		}
 		else if (!strcmp(tokens,"reset")) {
-			ret = reset(_game);
+			if((ret=checkMode(resetM,_game->mode))==ERR_OK){
+				ret = reset(_game);
+			}
 		}
 		else if (!strcmp(tokens,"hint")) {
 			if (read_args(&tokens, 2, &x,&y,&z,"hint")!=ERR_OK) {
 				return ARGS_INVALID;
 			}
-			ret = hint(_game,(int)x, (int)y);
+			if((ret=checkMode(hintM,_game->mode))==ERR_OK){
+				ret = hint(_game,(int)x, (int)y);
+			}
 		}
 		else if (!strcmp(tokens,"set")) {
 			if (read_args(&tokens, 3, &x,&y,&z,"set")!=ERR_OK) {
 				return ARGS_INVALID;
 			}
-			ret = set(_game, (int)x,(int)y, (int)z);
+			if((ret=checkMode(setM,_game->mode))==ERR_OK){
+				ret = set(_game, (int)x,(int)y, (int)z);
+			}
 		}
 		else if (!strcmp(tokens,"solve")) {
 			if (read_args(&tokens, 1, &x,&y,&z,"solve")!=ERR_OK) {
 				return ARGS_INVALID;
 			}
-			ret = solve(_game, tokens);
+			if((ret=checkMode(solveM,_game->mode))==ERR_OK){
+				ret = solve(_game, tokens);
+			}
 		}
 		else if (!strcmp(tokens,"edit")) {
 			tokens = strtok(NULL,delimit);
-			ret = edit(_game, tokens);
+			if((ret=checkMode(editM,_game->mode))==ERR_OK){
+				ret = edit(_game, tokens);
+			}
 		}
 		else if (!strcmp(tokens,"save")) {
 			if (read_args(&tokens, 1, &x,&y,&z,"save") != ERR_OK)
 				return ARGS_INVALID;
-			ret = save(_game,tokens);
+			if((ret=checkMode(saveM,_game->mode))==ERR_OK){
+				ret = save(_game,tokens);
+			}
 		}
 		else if (!strcmp(tokens,"guess")) {
 			if (read_args(&tokens, 1, &x,&y,&z,"guess") != ERR_OK)
 				return ARGS_INVALID;
-			ret = guess(_game,x);
+			if((ret=checkMode(guessM,_game->mode))==ERR_OK){
+				ret = guess(_game,x);
+			}
 		}
 		else if (!strcmp(tokens,"generate")) {
 			if (read_args(&tokens, 2, &x,&y,&z,"gen") != ERR_OK)
 				return ARGS_INVALID;
-			ret = generate(_game, (int) x, (int) y);
+			if((ret=checkMode(generateM,_game->mode))==ERR_OK){
+				ret = generate(_game, (int) x, (int) y);
+			}
 		}
 		else if (!strcmp(tokens,"autofill")){
-			ret = autofill(_game);
+			if((ret=checkMode(autofillM,_game->mode))==ERR_OK){
+				ret = autofill(_game);
+			}
 		}
 		else if (!strcmp(tokens,"mark_errors")) {
 			if (read_args(&tokens, 1, &x,&y,&z,"mark_errors") != ERR_OK)
 				return ARGS_INVALID;
-			ret = change_mark_errors(_game, (bool)x);
+			if((ret=checkMode(change_mark_errorsM,_game->mode))==ERR_OK){
+				ret = change_mark_errors(_game, (bool)x);
+			}
 		}
 		else if (!strcmp(tokens,"guess_hint")) {
 			if (read_args(&tokens, 2, &x,&y,&z,"guess_hint") != ERR_OK)
 				return ARGS_INVALID;
-			ret = guess_hint(_game, (int) x, (int) y);
+			if((ret=checkMode(guess_hintM,_game->mode))==ERR_OK){
+				ret = guess_hint(_game, (int) x, (int) y);
+			}
 		}
 		else if (!strcmp(tokens,"print_board")){
-			mainAux_printBoard(_game);
-			ret = ERR_OK;
+			if((ret=checkMode(printBoardM,_game->mode))==ERR_OK){
+				mainAux_printBoard(_game);
+				ret = ERR_OK;
+			}
 		}
-		else if (!strcmp(tokens,"undo"))
-			ret = undo(_game);
-		else if (!strcmp(tokens,"redo"))
-			ret = redo(_game);
-		else if (!strcmp(tokens,"num_solutions"))
-			ret = num_of_solutions(_game);
-		else if (!strcmp(tokens,"exit"))
-			ret = exit_game(_game);
+		else if (!strcmp(tokens,"undo")){
+			if((ret=checkMode(undoM,_game->mode))==ERR_OK){
+				ret = undo(_game);
+			}
+		}
+		else if (!strcmp(tokens,"redo")){
+			if((ret=checkMode(redoM,_game->mode))==ERR_OK){
+				ret = redo(_game);
+			}
+		}
+		else if (!strcmp(tokens,"num_solutions")){
+			if((ret=checkMode(num_of_solutionsM,_game->mode))==ERR_OK){
+				ret = num_of_solutions(_game);
+			}
+		}
+		else if (!strcmp(tokens,"exit")){
+			if((ret=checkMode(exitM,_game->mode))==ERR_OK){
+				ret = exit_game(_game);
+			}
+		}
 		else {
 			ret = INVALID_COMMAND;
 		}
