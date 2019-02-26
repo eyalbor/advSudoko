@@ -116,7 +116,7 @@ ADTErr autofill (Game* _game){
 	return ERR_OK;
 }
 
-ADTErr hint (Game* _game, int _userRow, int _userCol){
+ADTErr generalHint (Game* _game, int _userRow, int _userCol, bool isilp){
 
 	int res;
 	int N = _game->cols*_game->rows;
@@ -133,13 +133,23 @@ ADTErr hint (Game* _game, int _userRow, int _userCol){
 	if (_game->board[_userRow][_userCol].num != 0) {
 		return CELL_HAVE_VALUE;
 	}
-	res = solve_ilp(_game);
+	if(isilp){
+		res = solve_ilp(_game);
+	}
+	else{
+		res = solve_lp(_game);
+	}
 	if (res != ERR_OK) {
 		return BOARD_IS_NOT_SOLVED;
 	}
 
 	mainAux_printHint(res);
 	return ERR_OK;
+}
+
+/* ilp */
+ADTErr hint (Game* _game, int _userRow, int _userCol){
+	return generalHint(_game,_userRow,_userCol,TRUE);
 }
 
 
@@ -254,9 +264,11 @@ ADTErr num_of_solutions (Game* _game){
 	return ERR_OK;
 }
 
-
-ADTErr guess_hint(Game* _game, int _x, int _y){
-	return ERR_OK;
+/*
+ * LP
+ */
+ADTErr guess_hint(Game* _game, int _userRow, int _userCol){
+	return generalHint(_game,_userRow,_userCol,FALSE);
 }
 
 ADTErr guess(Game* _game, float _x){

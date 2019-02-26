@@ -244,16 +244,18 @@ ADTErr autofill (Game* _game);
  * 	int _y
  *
  * 	@Return:
- * 		if cell is fixed or cell contain a value return CELL_FIX or HINT_ERR
- * 		if the board not solve return
- * 		otherwise print the user the value
+ * 		INVALID_RANGE,
+ * 		CELL_FIX - if cell is fixed
+ * 		CELL_HAVE_VALUE - cell contain a value
+ * 		BOARD_ERRORS - if the board not solve
+ * 		ERR_OK -otherwise print the user the value
  *
  * 	give hint to user of cell <_x,_y>
  * 	run ILP to solve a board
  *
  * 	MODE AVAILIBALE: SOLVE
  */
-ADTErr hint (Game* _game, int _x, int _y);
+ADTErr hint (Game* _game,  int _userRow, int _userCol);
 
 /**
  * save
@@ -299,13 +301,15 @@ ADTErr num_of_solutions (Game* _game);
  * 	int_x
  * 	int _y
  * 	@Return:
- * 		if cell is fixed or cell contain a value return CELL_FIX or HINT_ERR
- * 		if the board not solve return
- * 		otherwise print the user the value
+ * 		INVALID_RANGE,
+ * 		CELL_FIX - if cell is fixed
+ * 		CELL_HAVE_VALUE - cell contain a value
+ * 		BOARD_ERRORS - if the board not solve
+ * 		ERR_OK -otherwise print the user the value
  *
  * MODE AVAILIBALE: SOLVE
  */
-ADTErr guess_hint(Game* _game, int _x, int _y);
+ADTErr guess_hint(Game* _game, int _userRow, int _userCol);
 
 /**
  * reset

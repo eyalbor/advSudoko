@@ -13,3 +13,7 @@
 ADTErr solve_ilp(Game* _game){
 	return ERR_OK;
 }
+
+ADTErr solve_lp(Game* _game){
+	return ERR_OK;
+}
