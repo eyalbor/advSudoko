@@ -9,9 +9,33 @@
 #include "game.h"
 #include "parcer.h"
 #include "main_aux.h"
+#include "solve.h"
 
 void freeFuncSingleSet(void * _item){
 	free(_item);
+}
+
+/**
+* erroneous_board - checks if the board contains error values
+*
+* @Input:
+* 	board - the Sudoku board
+*	 N - number of digits in one block
+* @Return ADTErr
+* 	ERR_VALUES - if the board contains erroneous values
+* 	ERR_OK - otherwise
+*
+*/
+ADTErr erroneous_board(Num** _board, int _N) {
+	int i; int j;
+	for(i=0; i < _N; i++){
+		for(j=0; j < _N; j++){
+			if(_board[i][j].status == ERRONEOUS){
+				return ERR_VALUES;
+			}
+		}
+	}
+	return ERR_OK;
 }
 
 void free_board(Game* _game){
@@ -100,7 +124,7 @@ ADTErr hint (Game* _game, int _userRow, int _userCol){
 	if (_userCol < 0 || _userRow < 0 || _userCol >= N || _userRow >= N){
 		return INVALID_RANGE;
 	}
-	if (erroneous_board(_game->board,N)) {
+	if (erroneous_board(_game->board,N)!= ERR_OK) {
 		return BOARD_ERRORS;
 	}
 	if (_game->board[_userRow][_userCol].status == FIXED) {
@@ -109,7 +133,7 @@ ADTErr hint (Game* _game, int _userRow, int _userCol){
 	if (_game->board[_userRow][_userCol].num != 0) {
 		return CELL_HAVE_VALUE;
 	}
-	res = solve_ilp(_game->board);
+	res = solve_ilp(_game);
 	if (res != ERR_OK) {
 		return BOARD_IS_NOT_SOLVED;
 	}
@@ -119,28 +143,7 @@ ADTErr hint (Game* _game, int _userRow, int _userCol){
 }
 
 
-/**
-* erroneous_board - checks if the board contains error values
-*
-* @Input:
-* 	board - the Sudoku board
-*	 N - number of digits in one block
-* @Return ADTErr
-* 	ERR_VALUES - if the board contains erroneous values
-* 	ERR_OK - otherwise
-*
-*/
-ADTErr erroneous_board(Num** _board, int _N) {
-	int i; int j;
-	for(i=0; i < _N; i++){
-		for(j=0; j < _N; j++){
-			if(_board[i][j].status == ERRONEOUS){
-				return ERR_VALUES;
-			}
-		}
-	}
-	return ERR_OK;
-}
+
 
 /**
  * writeNumToFile writes the number in a required cell to a given file.
