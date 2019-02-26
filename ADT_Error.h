@@ -11,7 +11,8 @@
 typedef enum
 {
     /* General ADT Errors */
-    ERR_OK                            =0,
+	EXIT,
+    ERR_OK,
     ERR_GENERAL,
     ERR_NOT_INITIALIZED,
     ERR_ALLOCATION_FAILED,
@@ -37,7 +38,8 @@ typedef enum
 	CANNOT_UNDO,
 	CANNOT_REDO,
 	NOT_ENOUGH_EMPTY_CELL,
-	BOARD_IS_NOT_SOLVED
+	BOARD_IS_NOT_SOLVED,
+	FILE_CANNOT_OPEN
 
 } ADTErr;
 

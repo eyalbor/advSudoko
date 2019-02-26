@@ -56,13 +56,9 @@ bool isNumber(char* input){
 }
 
 /**
-* using the function strtok, the function checks if the next token in command is legal.
-* if token isn't legal, function prints an error message. if token is legal, function returns it. (a pointer to the first character of token)
-*
+* the function checks if the next token in command is legal.
 * @param parsed_command - the current token.
 * @return
-* 0 - if next token got from strtok == NULL
-* parsed_command (the next token) - otherwise
 */
 char* check_next_tok(char* parsed_command) {
 	parsed_command = strtok(NULL,delimit);
@@ -261,8 +257,60 @@ ADTErr parcer_doCommand(Game* _game, char* _command){
 }
 
 /**
- *
+ * fp is already open
+ * all the data can be in a single line
  */
 ADTErr parse_file (FILE* fp, Game* _game){
+	char line[COMMAND_LEN];
+	char* read_tok;
+	int r, c, N, dig;
+	int count = -2;
+	ADTErr err;
+
+	while (fgets(line, COMMAND_LEN, fp) != NULL) {
+		if (ferror(fp)) { /* fgets error*/
+			printf("Error: fgets has failed\n");
+			return EXIT;
+		}
+		read_tok = strtok(line, delimit);
+		while(read_tok != NULL){
+			if (count==-2){
+				if(isNumber(read_tok)){
+					_game->rows = atoi(read_tok);
+				}
+			}
+			else if (count==-1){
+				if(isNumber(read_tok)){
+					_game->cols = atoi(read_tok);
+				}
+			}
+			else{
+				if(count==0){
+					/* init board */
+					N = _game->rows * _game->cols;
+					_game->board = create_empty_board(_game->rows, _game->cols);
+				}
+				r = count/N;
+				c = count%N;
+				/* TODO check if is number */
+				dig = atoi(read_tok);
+				if(dig != 0){
+					err = validate_dig(dig,r,c,_game);
+					if (read_tok[strlen(read_tok)-1] == '.' && _game->mode == SOLVE){
+						((_game->board)[r][c]).status = FIXED;
+					}
+					else if ( err != ERR_OK){
+						((_game->board)[r][c]).status = ERRONEOUS;
+					}
+					else{
+						((_game->board)[r][c]).status = SHOWN;
+					}
+					((_game->board)[r][c]).num = dig;
+				}
+			}
+			count++;
+			read_tok = strtok(NULL, delimit);
+		}
+	}
 	return ERR_OK;
 }

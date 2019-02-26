@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "bool.h"
 #include "macro.h"
@@ -11,8 +12,15 @@
 
 
 bool mainAux_readCommand(char* command){
+	int l=0;
+	char c;
 	fseek(stdin,0,SEEK_END);
 	if (NULL == fgets(command,COMMAND_LEN,stdin)){
+		return FALSE;
+	}
+	l  = strlen(command);
+	c  = *(command+(l-1));
+	if( c != '\n' ){
 		return FALSE;
 	}
 	return TRUE;

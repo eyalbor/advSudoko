@@ -8,6 +8,7 @@
 	 char* ad[]=
 	{
 		/* General ADT Errors */
+		"exit",
 		"ERR_OK",
 		"ERR_GENERAL",
 		"ERR_NOT_INITIALIZED",
@@ -33,7 +34,8 @@
 		"cannot undo",
 		"cannot redo",
 		"not enough empty cell",
-		"board is not solved"
+		"board is not solved",
+		"file cannot be opened"
 
 	};
 	if(errNum==VALIDATION_PASSED){

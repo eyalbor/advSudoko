@@ -97,7 +97,7 @@ ADTErr solve(Game* _game, char* _path);
  * edit
  * @Input:
  * 	Game*
- * 	char* _pathToFile is optional, if null the program enter EDIT mode with empty 9X9 board
+ * 	char* _pathToFile is optional, if NULL the program enter EDIT mode with empty 9X9 board
  * 	@Return:
  * 		ADTErr
  *
@@ -330,5 +330,15 @@ ADTErr reset (Game* _game);
  * any unsave work is lost
  */
 ADTErr exit_game (Game* _game);
+
+/**
+ * create_empty_board - creates a new empty board of the given size.
+ * @param
+ * m - number of rows in one block
+ * n - number of columns in one block
+ */
+Num** create_empty_board(int _m, int _n);
+
+ADTErr validate_dig(dig,r,c,_game);
 
 #endif

@@ -23,14 +23,18 @@ int main (int argc, char** argv) {
 		if(mainAux_readCommand(commandStr) == TRUE){
 			//printf("%s",commandStr);
 			command_res = parcer_doCommand(game,commandStr);
-			if(command_res!=ERR_OK){
+			if(command_res != EXIT && command_res!=ERR_OK){
 				mainAux_printError((ADTErr)command_res);
 			}
-			mainAux_printBoard(game);
+			else if(command_res == EXIT){
+				mainAux_printError(EXIT);
+			}
+			else{
+				mainAux_printBoard(game);
+			}
 		}
 		else{
 			mainAux_printError(ENTER_COMMAND);
-			command_res = 0;
 		}
 	}
 
