@@ -57,8 +57,13 @@ void main_Aux_printHint(int z);
  * Input: ADTERR error. value of error.
  * Output: HandleErr function with the input error. it prints the error.
  */
-
-
 void mainAux_printError(ADTErr err);
+
+/*
+ * mainAux_printHint
+ * Input: int dig
+ * Output: void
+ */
+void mainAux_printHint(int dig);
 
 #endif

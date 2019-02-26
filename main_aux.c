@@ -41,3 +41,7 @@ void mainAux_printExit(){
 void mainAux_printError(ADTErr err){
 	HandleErr(err);
 }
+
+void mainAux_printHint(int dig){
+	printf("Hint: cell can be: %d\n", dig);
+}

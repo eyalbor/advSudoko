@@ -8,6 +8,7 @@
 #include "ADT_Error.h"
 #include "game.h"
 #include "parcer.h"
+#include "main_aux.h"
 
 void freeFuncSingleSet(void * _item){
 	free(_item);
@@ -16,10 +17,12 @@ void freeFuncSingleSet(void * _item){
 void free_board(Game* _game){
 	 int i;
 	 int N = _game->cols *_game->rows;
-	 for (i = 0; i < N; i++) {
-		free(_game->board[i]); /*frees all cols*/
-	}
-	free(_game->board); /*frees all rows*/
+	 if(_game->board!=NULL){
+		 for (i = 0; i < N; i++) {
+			free(_game->board[i]); /*frees all cols*/
+		}
+		free(_game->board); /*frees all rows*/
+	 }
 }
 
 Game* game_init(){
@@ -28,13 +31,13 @@ Game* game_init(){
 	list_new(game->moveList,sizeof(SingleSet),freeFuncSingleSet);
 	game->mark_error=TRUE;
 	game->mode=INIT;
+	game->cols = DEF_COLS;
+	game->rows = DEF_ROWS;
 	return game;
 }
 
 void game_destroy(Game* _game){
-	if(_game->board!=NULL){
-		free(_game->board);
-	}
+	free_board(_game);
 	list_destroy(_game->moveList);
 	free(_game);
 }
@@ -89,11 +92,114 @@ ADTErr autofill (Game* _game){
 	return ERR_OK;
 }
 
-ADTErr hint (Game* _game, int _x, int _y){
+ADTErr hint (Game* _game, int _userRow, int _userCol){
+
+	int res;
+	int N = _game->cols*_game->rows;
+	/*errors*/
+	if (_userCol < 0 || _userRow < 0 || _userCol >= N || _userRow >= N){
+		return INVALID_RANGE;
+	}
+	if (erroneous_board(_game->board,N)) {
+		return BOARD_ERRORS;
+	}
+	if (_game->board[_userRow][_userCol].status == FIXED) {
+		return CELL_FIX;
+	}
+	if (_game->board[_userRow][_userCol].num != 0) {
+		return CELL_HAVE_VALUE;
+	}
+	res = solve_ilp(_game->board);
+	if (res != ERR_OK) {
+		return BOARD_IS_NOT_SOLVED;
+	}
+
+	mainAux_printHint(res);
 	return ERR_OK;
 }
 
+
+/**
+* erroneous_board - checks if the board contains error values
+*
+* @Input:
+* 	board - the Sudoku board
+*	 N - number of digits in one block
+* @Return ADTErr
+* 	ERR_VALUES - if the board contains erroneous values
+* 	ERR_OK - otherwise
+*
+*/
+ADTErr erroneous_board(Num** _board, int _N) {
+	int i; int j;
+	for(i=0; i < _N; i++){
+		for(j=0; j < _N; j++){
+			if(_board[i][j].status == ERRONEOUS){
+				return ERR_VALUES;
+			}
+		}
+	}
+	return ERR_OK;
+}
+
+/**
+ * writeNumToFile writes the number in a required cell to a given file.
+ * @Input
+ * fp - pointer to file
+ * board - game's board
+ * row - row of cell
+ * col - column of cell
+ * mode - game's mode
+ */
+void writeNumToFile (FILE* fp, Num** board, int row, int col, MODE mode) {
+	int dig = board[row][col].num;
+	if (mode == EDIT) {
+		if ( dig != 0)
+			fprintf(fp,"%d.",dig);
+		else
+			fprintf(fp, "0");
+	}
+	else if (mode == SOLVE) {
+		if (board[row][col].status == FIXED)
+			fprintf(fp,"%d.",dig);
+		else
+			fprintf(fp,"%d",dig);
+	}
+}
+
 ADTErr save (Game* _game, char* _path){
+
+	FILE* fp;
+	int i, j;
+	int N = _game->rows * _game->cols;
+	ADTErr err;
+	if (_game->mode == EDIT) {
+		if(erroneous_board(_game->board,N) != ERR_OK){
+			return PUZLLE_ERROR_CANNOT_SAVE;
+		}
+		if((err=validate(_game)) != ERR_OK){
+			return err;
+		}
+	}
+	fp = fopen (_path, "w");
+	if(!fp){
+		return FILE_CANNOT_OPEN;
+	}
+	/*saving*/
+	fprintf(fp,"%d %d\n", _game->rows, _game->cols);
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			writeNumToFile(fp,_game->board,i,j,_game->mode);
+			if (j == N-1){
+				fputc('\n',fp);
+			}
+			else{
+				fputc(' ', fp);
+			}
+		}
+	}
+	fclose(fp);
+	printf("Saved to: %s\n", _path);
 	return ERR_OK;
 }
 
@@ -107,6 +213,7 @@ ADTErr reset (Game* _game){
 }
 
 ADTErr change_mark_errors (Game* _game , bool _x){
+	_game->mark_error = _x;
 	return ERR_OK;
 }
 
@@ -217,10 +324,11 @@ ADTErr printBoard(Game* _game){
 }
 
 ADTErr exit_game (Game* _game){
+	game_destroy(_game);
 	return EXIT;
 }
 
 
-ADTErr validate_dig(dig,r,c,_game){
+ADTErr validate_dig(int dig,int r, int c,Game* _game){
 	return ERR_OK;
 }

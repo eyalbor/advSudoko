@@ -24,18 +24,22 @@
 		"PUZZLE_SOLVED",
 		"Validation passed: board is solvable",
 		"Validation failed: board is unsolvable",
-		"invalid command",
-		"enter command",
+		"Invalid command",
+		"Enter command",
 		"Args invalid",
-		"too many parameters was entered",
-		"not enough parameters was entered",
-		"board is with errors",
-		"command is not available in current mode",
-		"cannot undo",
-		"cannot redo",
-		"not enough empty cell",
-		"board is not solved",
-		"file cannot be opened"
+		"Too many parameters was entered",
+		"Not enough parameters was entered",
+		"Board is with errors",
+		"Command is not available in current mode",
+		"Cannot undo",
+		"Cannot redo",
+		"Not enough empty cell",
+		"Board is not solved",
+		"File cannot be opened",
+		"Puzzle is not valid - cannot be saved",
+		"Puzzle contain's error values",
+		"Invalid range",
+		"Puzzle contains value in this cell"
 
 	};
 	if(errNum==VALIDATION_PASSED){

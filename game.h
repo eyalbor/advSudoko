@@ -291,6 +291,9 @@ ADTErr num_of_solutions (Game* _game);
 /**
  * guess_hint
  *
+ * show a guess to the user for single cell <_x,_y>
+ * run LP
+ *
  * @Input:
  * 	Game*
  * 	int_x
@@ -299,9 +302,6 @@ ADTErr num_of_solutions (Game* _game);
  * 		if cell is fixed or cell contain a value return CELL_FIX or HINT_ERR
  * 		if the board not solve return
  * 		otherwise print the user the value
- *
- *	show a guess to the user for single cell <_x,_y>
- *	run LP
  *
  * MODE AVAILIBALE: SOLVE
  */
@@ -339,6 +339,6 @@ ADTErr exit_game (Game* _game);
  */
 Num** create_empty_board(int _m, int _n);
 
-ADTErr validate_dig(dig,r,c,_game);
+ADTErr validate_dig(int dig, int r, int c,Game* _game);
 
 #endif
