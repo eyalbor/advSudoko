@@ -139,21 +139,23 @@ ADTErr printBoard(Game* _game);
 
 /**
  * set
+ *
+ * set the value of cell <_row,_col> with _dig
+ * if the _dig is zero the cell is cleared
+ * The redo part are cleared
+ *
  * @Input:
  * 		Game*
  * 		int _col
  * 		int _row
  * 		int _dig
  * 	@Return:
- * 		ADTErr if _dig base is invalid return ARGS_INVALID
- * 				fix cell is not update in SOLVE mode
- * 				cell can be mark as error if not correct
- * 				if the last cell if filled then the board can be error return BOARD_ERRORS, the user must undo
- * 				if the puzzle finish correct return PUZZLE_SOLVED then the mode of the game set to INIT
- *
- * set the value of cell <_row,_col> with _dig
- * if the _dig is zero the cell is cleared
- * The redo part are cleared
+ * 		ADTErr
+ * 		INVALID_RANGE _dig base is invalid or _col || _row invalid
+ * 		CELL_FIX -fix cell is not update in SOLVE mode
+ * 		cell can be mark as error if not correct
+ * 		BOARD_ERRORS - if the last cell if filled then the board can be error return BOARD_ERRORS, the user must undo
+ * 		PUZZLE_SOLVED - if the puzzle finish correct then the mode of the game set to INIT
  *
  * MODE AVAILIBALE: SOLVE, EDIT
  */

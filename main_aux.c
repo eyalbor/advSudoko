@@ -45,3 +45,7 @@ void mainAux_printError(ADTErr err){
 void mainAux_printHint(int dig){
 	printf("Hint: cell can be: %d\n", dig);
 }
+
+void mainAux_printGameFinish(){
+	printf("Puzzle finished...\n");
+}

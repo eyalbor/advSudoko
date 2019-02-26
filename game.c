@@ -49,6 +49,10 @@ void free_board(Game* _game){
 	 }
 }
 
+bool isGameFinish(Game* _game){
+	return FALSE;
+}
+
 Game* game_init(){
 	Game* game = (Game*)malloc(sizeof(game));
 	game->moveList = malloc(sizeof(list));
@@ -92,8 +96,53 @@ Num** create_empty_board(int _m, int _n){
 	return board;
 }
 
-
+/**
+ * set - sets a cell to the required number.
+ * adds the move to the move list,
+ * changes relevant cell's status to erroneous and updates the number of hidden cells.
+ * when board is full, prints message if it is solved or erroneous. changes mode to INIT if it's solved.
+ */
 ADTErr set ( Game* _game, int _col, int _row, int _dig){
+	int res;
+	int prev_val;
+	STAT prev_stat;
+	SingleSet* move_step;
+	int N = _game->cols*_game->rows;
+
+	if(_col < 0 || _row < 0 || _dig < 0 || _col >= N || _row >= N || _dig > N){ /*check for range*/
+		return INVALID_RANGE;
+	}
+	if (_game->board[_row][_col].status == FIXED) {
+		return CELL_FIX;
+	}
+
+	/*set the cell*/
+	prev_val = _game->board[_row][_col].num;
+	prev_stat = _game->board[_row][_col].status;
+	if (prev_val != _dig) { /*if they are the same, board is not changing, and we don't consider it as a move*/
+		if (_dig == 0) { /*emptying a cell*/
+			_game->board[_row][_col].status = HIDDEN;
+		}
+		if (!validate_dig(_dig,_row,_col,_game)){
+			_game->board[_row][_col].status = ERRONEOUS;
+		}
+		else{
+			_game->board[_row][_col].status = SHOWN;
+		}
+	}
+
+
+	if(isGameFinish(_game)){
+		if (erroneous_board(_game->board,N)!= ERR_OK) {
+			return BOARD_ERRORS;
+		}
+		else{
+			mainAux_printGameFinish();
+			_game->mode = INIT;
+			/* TODO maybe init the game  */
+			return PUZZLE_SOLVED;
+		}
+	}
 	return ERR_OK;
 }
 
@@ -341,9 +390,4 @@ ADTErr printBoard(Game* _game){
 ADTErr exit_game (Game* _game){
 	game_destroy(_game);
 	return EXIT;
-}
-
-
-ADTErr validate_dig(int dig,int r, int c,Game* _game){
-	return ERR_OK;
 }

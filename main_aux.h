@@ -66,4 +66,11 @@ void mainAux_printError(ADTErr err);
  */
 void mainAux_printHint(int dig);
 
+/*
+ * mainAux_printGameFinish
+ * Input:
+ * Output:
+ */
+void mainAux_printGameFinish();
+
 #endif
