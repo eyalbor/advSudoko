@@ -114,6 +114,9 @@ ADTErr set ( Game* _game, int _col, int _row, int _dig){
 	SingleSet* move_step;
 	int N = _game->cols*_game->rows;
 
+	_row=_row-1;
+	_col=_col-1;
+
 	if(_col < 0 || _row < 0 || _dig < 0 || _col >= N || _row >= N || _dig > N){ /*check for range*/
 		return INVALID_RANGE;
 	}
@@ -127,12 +130,14 @@ ADTErr set ( Game* _game, int _col, int _row, int _dig){
 	if (prev_val != _dig) { /*if they are the same, board is not changing, and we don't consider it as a move*/
 		if (_dig == 0) { /*emptying a cell*/
 			_game->board[_row][_col].status = HIDDEN;
+			_game->board[_row][_col].num = _dig;
 		}
-		if (!validate_digit(_dig,_row,_col,_game)){
+		else if (!validate_digit(_dig,_row,_col,_game)){
 			_game->board[_row][_col].status = ERRONEOUS;
 		}
 		else{
 			_game->board[_row][_col].status = SHOWN;
+			_game->board[_row][_col].num = _dig;
 		}
 	}
 

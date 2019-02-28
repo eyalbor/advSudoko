@@ -133,7 +133,7 @@ ADTErr read_args(char* parsed_command, int args_num, double* x, double* y, doubl
 		if (parsed_command == NULL)
 			return ARGS_INVALID;
 		*z = atof(parsed_command);
-		if(*z == 0.0){
+		if(*z == 0.0 && parsed_command[0]!='0'){
 			return ARGS_INVALID;
 		}
 	}
