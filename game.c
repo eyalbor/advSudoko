@@ -39,11 +39,15 @@ ADTErr erroneous_board(Num** _board, int _N) {
 }
 
 void free_board(Game* _game){
-	 int i;
+	 int i = 0;
 	 int N = _game->cols *_game->rows;
-	 if(_game->board!=NULL){
+
+	 if(_game->board != NULL)
+	 {
 		 for (i = 0; i < N; i++) {
-			free(_game->board[i]); /*frees all cols*/
+			 if(_game->board[i] != NULL){
+				 free(_game->board[i]); /*frees all cols*/
+			 }
 		}
 		free(_game->board); /*frees all rows*/
 	 }
@@ -57,17 +61,18 @@ Game* game_init(){
 	Game* game = (Game*)malloc(sizeof(game));
 	game->moveList = malloc(sizeof(list));
 	list_new(game->moveList,sizeof(SingleSet),freeFuncSingleSet);
-	game->currentStepNode=NULL;
-	game->mark_error=TRUE;
-	game->mode=INIT;
+	game->currentStepNode = NULL;
+	game->board = NULL;
+	game->mark_error = TRUE;
+	game->mode = INIT;
 	game->cols = DEF_COLS;
 	game->rows = DEF_ROWS;
 	return game;
 }
 
 void game_destroy(Game* _game){
-	free_board(_game);
 	list_destroy(_game->moveList);
+	free_board(_game);
 	free(_game);
 }
 
@@ -282,10 +287,12 @@ ADTErr change_mark_errors (Game* _game , bool _x){
 }
 
 ADTErr edit (Game* _game, char* _parsed_command){
-	FILE* fp;
-	int res;
-	if(_game->moveList!=NULL){
+	FILE* fp = NULL;
+	ADTErr res = ERR_OK;
+	if(_game->moveList != NULL){
 		list_destroy(_game->moveList);
+		_game->moveList = NULL;
+		_game->moveList = malloc(sizeof(list));
 		list_new(_game->moveList,sizeof(SingleSet),freeFuncSingleSet);
 	}
 	if(_parsed_command == NULL){ /* create empty board 9*9 */

@@ -169,7 +169,7 @@ ADTErr parcer_doCommand(Game* _game, char* _command){
 			}
 		}
 		else if (!strcmp(tokens,"hint")) {
-			if (read_args(&tokens, 2, &x,&y,&z,"hint")!=ERR_OK) {
+			if (read_args(tokens, 2, &x,&y,&z,"hint")!=ERR_OK) {
 				return ARGS_INVALID;
 			}
 			if((ret=checkMode(hintM,_game->mode))==ERR_OK){
