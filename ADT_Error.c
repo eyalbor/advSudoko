@@ -36,6 +36,7 @@
 		"Not enough empty cell",
 		"Board is not solved",
 		"File cannot be opened",
+		"File error"
 		"Puzzle is not valid - cannot be saved",
 		"Puzzle contain's error values",
 		"Invalid range",

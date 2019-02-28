@@ -57,6 +57,7 @@ Game* game_init(){
 	Game* game = (Game*)malloc(sizeof(game));
 	game->moveList = malloc(sizeof(list));
 	list_new(game->moveList,sizeof(SingleSet),freeFuncSingleSet);
+	game->currentStepNode=NULL;
 	game->mark_error=TRUE;
 	game->mode=INIT;
 	game->cols = DEF_COLS;
@@ -77,7 +78,7 @@ ADTErr validate (Game* _game){
 
 /**
  * create_empty_board - creates a new empty board of the given size.
- * @param
+ * @Input
  * m - number of rows in one block
  * n - number of columns in one block
  */
@@ -103,7 +104,6 @@ Num** create_empty_board(int _m, int _n){
  * when board is full, prints message if it is solved or erroneous. changes mode to INIT if it's solved.
  */
 ADTErr set ( Game* _game, int _col, int _row, int _dig){
-	int res;
 	int prev_val;
 	STAT prev_stat;
 	SingleSet* move_step;
@@ -207,30 +207,32 @@ ADTErr hint (Game* _game, int _userRow, int _userCol){
 /**
  * writeNumToFile writes the number in a required cell to a given file.
  * @Input
- * fp - pointer to file
- * board - game's board
- * row - row of cell
- * col - column of cell
- * mode - game's mode
+ * 	fp - pointer to file
+ * 	board - game's board
+ * 	row - row of cell
+ * 	col - column of cell
+ * 	mode - game's mode
  */
 void writeNumToFile (FILE* fp, Num** board, int row, int col, MODE mode) {
 	int dig = board[row][col].num;
 	if (mode == EDIT) {
 		if ( dig != 0)
+			/* save as fix */
 			fprintf(fp,"%d.",dig);
 		else
 			fprintf(fp, "0");
 	}
 	else if (mode == SOLVE) {
-		if (board[row][col].status == FIXED)
+		if (board[row][col].status == FIXED){
 			fprintf(fp,"%d.",dig);
-		else
+		}
+		else{
 			fprintf(fp,"%d",dig);
+		}
 	}
 }
 
 ADTErr save (Game* _game, char* _path){
-
 	FILE* fp;
 	int i, j;
 	int N = _game->rows * _game->cols;
@@ -337,35 +339,35 @@ void print_dashes(int m, int n) {
 }
 
 /**
- * print_num prints the numbers according to their status (HIDDEN|SHOWN|FIXED|ERRONEOUS) and according to game's mode.
+ * print_num
+ * prints the numbers according to their status HIDDEN|SHOWN|FIXED|ERRONEOUS and according to game's mode.
  *
  * @Input
- * n - struct Num, which represents the number that appears in the cell.
- * mode - game's mode
- * mark_errors - indicates whether to mark erros
+ * 	Num n - number in the cell.
+ *  mode - game's mode
+ *  mark_errors - indicates whether to mark error
  */
 void print_num (Num n, MODE mode, int mark_errors) {
-	STAT stat = n.status;
-	int number = n.num;
-	switch (stat) {
-	case HIDDEN: /*value is 0*/
-		printf("    ");
-		break;
-	case SHOWN:
-		printf(" %2d ", number);
-		break;
-	case FIXED:
-		if (mode == SOLVE)
-			printf(" %2d.", number);
-		else
-			printf(" %2d ", number);
-		break;
-	case ERRONEOUS:
-		if (mode == EDIT || mark_errors)
-			printf(" %2d*", number);
-		else
-			printf(" %2d ", number);
-	}
+
+	switch (n.status) {
+		case HIDDEN: /*value is 0*/
+			printf("    ");
+			break;
+		case SHOWN:
+			printf(" %2d ", n.num);
+			break;
+		case FIXED:
+			if (mode == SOLVE)
+				printf(" %2d.", n.num);
+			else
+				printf(" %2d ", n.num);
+			break;
+		case ERRONEOUS:
+			if (mode == EDIT || mark_errors)
+				printf(" %2d*", n.num);
+			else
+				printf(" %2d ", n.num);
+		}
 }
 
 

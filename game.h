@@ -46,6 +46,7 @@ typedef struct _game{
 	MODE mode;
 	bool mark_error; /* determine whether errors in the sudoku are display */
 	list* moveList;
+	listNode* currentStepNode;
 	Num** board;
 	int rows;
 	int cols;

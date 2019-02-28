@@ -56,14 +56,15 @@ bool isNumber(char* input){
 }
 
 /**
-* the function checks if the next token in command is legal.
-* @param parsed_command - the current token.
-* @return
+ * check_next_tok
+* checks if the next token in command is legal.
+* @Input
+* 	parsed_command - the current token.
+* @return char*  - the next tokens
 */
 char* check_next_tok(char* parsed_command) {
 	parsed_command = strtok(NULL,delimit);
 	if (parsed_command == NULL) {
-//		print_invalid();
 		return NULL;
 	}
 	return parsed_command;
@@ -71,58 +72,72 @@ char* check_next_tok(char* parsed_command) {
 
 /**
  * check_integer:
- * @param
- * num - a double
+ * @Input
+ * 		num double
  * @return
- * 1 if num is integer (its fraction is 0)
- * 0 otherwise
+ * 		TRUE if num is integer (its fraction is 0)
+ * 		FALSE otherwise
  */
-int check_integer(double num) {
+bool check_integer(double num) {
 	if (num - (int) num == 0)
-		return 1;
-	return 0;
+		return TRUE;
+	return FALSE;
 }
 
 /**
- * read_args - reads the specified number of arguments from the given command and checks if they are legal.
- * function only checks proper number of arguments and integer value of them when needed.
- * if number is not integer, function changes it to -1.
- * function updates the values of parameters. prints error messages if values aren't legal.
- * @param
- * parsed_command - the given command
- * args_num - number of arguments of the proper command
- * x - pointer to variable x
- * y - pointer to variable y
- * z - pointer to variable z
- * func - name of calling function
- * @return
- * 1 - if command is legal or number is not integer
- * 0 - otherwise (illegal command)
+ * read_args -
+ * reads the specified number of arguments from the given command and checks if they are legal.
+ *
+ * @Input
+ * 	char* parsed_command - the given command
+ * 	args_num - number of arguments of the proper command
+ * 	x - pointer to variable x
+ * 	y - pointer to variable y
+ * 	z - pointer to variable z
+ * 	func - name of calling function
+ * @return ADTErr
+ * 	ERR_OK - legal command
+ * 	ARGS_INVALID - otherwise
  */
-int read_args(char** parsed_command, int args_num, double* x, double* y, double* z, char* func) {
-	*parsed_command = check_next_tok(*parsed_command);
-	if (*parsed_command == NULL)
-		return 0;
-	*x = atof(*parsed_command);
+ADTErr read_args(char* parsed_command, int args_num, double* x, double* y, double* z, char* func) {
+	parsed_command = check_next_tok(parsed_command);
+	if (parsed_command == NULL)
+		return ARGS_INVALID;
+
+	if(strcmp("mark_errors",func)==0){
+		if((*parsed_command!='0' || *parsed_command!='1'))
+			return ARGS_INVALID;
+		else{
+			/* atof converts the string argument str to a floating-point number */
+			*x = atof(parsed_command);
+			return ERR_OK;
+		}
+	}
+
+	*x = atof(parsed_command);
+	if(*x == 0.0){
+		return ARGS_INVALID;
+	}
+
 	if (args_num > 1) {
-		*parsed_command = check_next_tok(*parsed_command);
-		if (*parsed_command == NULL)
-			return 0;
-		*y = atof(*parsed_command);
+		parsed_command = check_next_tok(parsed_command);
+		if (parsed_command == NULL)
+			return ARGS_INVALID;
+		*y = atof(parsed_command);
+		if(*y == 0.0){
+			return ARGS_INVALID;
+		}
 	}
 	if (args_num > 2) {
-		*parsed_command = check_next_tok(*parsed_command);
-		if (*parsed_command == NULL)
-			return 0;
-		*z = atof(*parsed_command);
+		parsed_command = check_next_tok(parsed_command);
+		if (parsed_command == NULL)
+			return ARGS_INVALID;
+		*z = atof(parsed_command);
+		if(*z == 0.0){
+			return ARGS_INVALID;
+		}
 	}
-	if ((!check_integer(*x) || (*x == 0.0 && **parsed_command != '0')) && strcmp(func,"solve") != 0 && strcmp(func,"save") != 0)
-		*x = -1;
-	if (args_num > 1 && (!check_integer(*y) || (*y == 0.0 && **parsed_command != '0')))
-		*y = -1;
-	if (args_num > 2 && (!check_integer(*z) || (*z == 0.0 && **parsed_command != '0')))
-		*z = -1;
-	return 1;
+	return ERR_OK;
 }
 
 
@@ -162,7 +177,7 @@ ADTErr parcer_doCommand(Game* _game, char* _command){
 			}
 		}
 		else if (!strcmp(tokens,"set")) {
-			if (read_args(&tokens, 3, &x,&y,&z,"set")!=ERR_OK) {
+			if (read_args(tokens, 3, &x,&y,&z,"set")!=ERR_OK) {
 				return ARGS_INVALID;
 			}
 			if((ret=checkMode(setM,_game->mode))==ERR_OK){
@@ -170,7 +185,7 @@ ADTErr parcer_doCommand(Game* _game, char* _command){
 			}
 		}
 		else if (!strcmp(tokens,"solve")) {
-			if (read_args(&tokens, 1, &x,&y,&z,"solve")!=ERR_OK) {
+			if (read_args(tokens, 1, &x,&y,&z,"solve")!=ERR_OK) {
 				return ARGS_INVALID;
 			}
 			if((ret=checkMode(solveM,_game->mode))==ERR_OK){
@@ -184,21 +199,20 @@ ADTErr parcer_doCommand(Game* _game, char* _command){
 			}
 		}
 		else if (!strcmp(tokens,"save")) {
-			if (read_args(&tokens, 1, &x,&y,&z,"save") != ERR_OK)
-				return ARGS_INVALID;
+			tokens = strtok(NULL,delimit);
 			if((ret=checkMode(saveM,_game->mode))==ERR_OK){
 				ret = save(_game,tokens);
 			}
 		}
 		else if (!strcmp(tokens,"guess")) {
-			if (read_args(&tokens, 1, &x,&y,&z,"guess") != ERR_OK)
+			if (read_args(tokens, 1, &x,&y,&z,"guess") != ERR_OK)
 				return ARGS_INVALID;
 			if((ret=checkMode(guessM,_game->mode))==ERR_OK){
 				ret = guess(_game,x);
 			}
 		}
 		else if (!strcmp(tokens,"generate")) {
-			if (read_args(&tokens, 2, &x,&y,&z,"gen") != ERR_OK)
+			if (read_args(tokens, 2, &x,&y,&z,"gen") != ERR_OK)
 				return ARGS_INVALID;
 			if((ret=checkMode(generateM,_game->mode))==ERR_OK){
 				ret = generate(_game, (int) x, (int) y);
@@ -210,14 +224,14 @@ ADTErr parcer_doCommand(Game* _game, char* _command){
 			}
 		}
 		else if (!strcmp(tokens,"mark_errors")) {
-			if (read_args(&tokens, 1, &x,&y,&z,"mark_errors") != ERR_OK)
+			if (read_args(tokens, 1, &x,&y,&z,"mark_errors") != ERR_OK)
 				return ARGS_INVALID;
 			if((ret=checkMode(change_mark_errorsM,_game->mode))==ERR_OK){
 				ret = change_mark_errors(_game, (bool)x);
 			}
 		}
 		else if (!strcmp(tokens,"guess_hint")) {
-			if (read_args(&tokens, 2, &x,&y,&z,"guess_hint") != ERR_OK)
+			if (read_args(tokens, 2, &x,&y,&z,"guess_hint") != ERR_OK)
 				return ARGS_INVALID;
 			if((ret=checkMode(guess_hintM,_game->mode))==ERR_OK){
 				ret = guess_hint(_game, (int) x, (int) y);
@@ -274,25 +288,24 @@ ADTErr parse_file (FILE* fp, Game* _game){
 		}
 		read_tok = strtok(line, delimit);
 		while(read_tok != NULL){
-			if (count==-2){
-				if(isNumber(read_tok)){
-					_game->rows = atoi(read_tok);
-				}
+
+			if(isNumber(read_tok) == FALSE){
+				return EXIT;
 			}
-			else if (count==-1){
-				if(isNumber(read_tok)){
-					_game->cols = atoi(read_tok);
-				}
+			if (count == -2){
+				_game->rows = atoi(read_tok);
 			}
-			else{
-				if(count==0){
+			else if (count == -1){
+				_game->cols = atoi(read_tok);
+			}
+			else {
+				if(count == 0){
 					/* init board */
 					N = _game->rows * _game->cols;
 					_game->board = create_empty_board(_game->rows, _game->cols);
 				}
 				r = count/N;
 				c = count%N;
-				/* TODO check if is number */
 				dig = atoi(read_tok);
 				if(dig != 0){
 					err = validate_digit(dig,r,c,_game);
