@@ -1,8 +1,6 @@
 #ifndef __STACK_H
 #define __STACK_H
 
-// from previous post on linked-list implementation
-// in C
 #include "list.h"
 
 typedef struct {

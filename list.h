@@ -1,4 +1,5 @@
 /**
+ * generic list we take from
  * https://pseudomuto.com/2013/05/implementing-a-generic-linked-list-in-c/
  */
 

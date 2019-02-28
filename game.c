@@ -123,7 +123,7 @@ ADTErr set ( Game* _game, int _col, int _row, int _dig){
 		if (_dig == 0) { /*emptying a cell*/
 			_game->board[_row][_col].status = HIDDEN;
 		}
-		if (!validate_dig(_dig,_row,_col,_game)){
+		if (!validate_digit(_dig,_row,_col,_game)){
 			_game->board[_row][_col].status = ERRONEOUS;
 		}
 		else{
@@ -390,4 +390,41 @@ ADTErr printBoard(Game* _game){
 ADTErr exit_game (Game* _game){
 	game_destroy(_game);
 	return EXIT;
+}
+
+
+bool validate_row(int _dig, int _row, Game* _game){
+	return TRUE;
+}
+
+bool validate_col(int _dig, int _col, Game* _game){
+	return TRUE;
+}
+
+bool validate_block(int _dig, int _row, int _col, Game* _game){
+	return TRUE;
+}
+
+/**
+* checks if a placement of a given digit in a given cell is valid,
+* @Input
+* 	 int dig - the checked digit
+* 	 int row - the cell's row
+* 	 int col - the cell's column
+* 	 Game* game
+
+* @return
+* FALSE - if one of the validations has failed
+* TRUE - if all validations succeeded
+*/
+bool validate_digit (int _dig, int _row, int _col, Game* _game) {
+	if (_dig == 0)
+		return TRUE;
+	if (!validate_row(_dig, _row, _game))
+		return FALSE;
+	if (!validate_col(_dig, _col, _game))
+		return FALSE;
+	if (!validate_block(_dig,_row,_col,_game))
+		return FALSE;
+	return TRUE;
 }

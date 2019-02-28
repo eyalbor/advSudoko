@@ -17,7 +17,5 @@ ADTErr solve_ilp(Game* _game);
  */
 ADTErr solve_lp(Game* _game);
 
-bool validate_dig (int _dig, int _row, int _col, Game* _game);
-
 #endif
 

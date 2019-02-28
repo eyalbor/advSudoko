@@ -345,6 +345,6 @@ ADTErr exit_game (Game* _game);
  */
 Num** create_empty_board(int _m, int _n);
 
-ADTErr validate_dig(int dig, int r, int c,Game* _game);
+bool validate_digit(int dig, int r, int c, Game* _game);
 
 #endif
