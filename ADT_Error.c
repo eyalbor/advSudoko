@@ -8,7 +8,7 @@
 	 char* ad[]=
 	{
 		/* General ADT Errors */
-		"exit",
+		"Exit",
 		"ERR_OK",
 		"ERR_GENERAL",
 		"ERR_NOT_INITIALIZED",
@@ -20,23 +20,26 @@
 		/* String Errors */
 		"cell is fixed",
 		"value is invalid",
-		"HINT",
+		"Hint error",
 		"PUZZLE_SOLVED",
 		"Validation passed: board is solvable",
 		"Validation failed: board is unsolvable",
+
 		"Invalid command",
 		"Enter command",
 		"Args invalid",
 		"Too many parameters was entered",
 		"Not enough parameters was entered",
 		"Board is with errors",
+
 		"Command is not available in current mode",
 		"Cannot undo",
 		"Cannot redo",
 		"Not enough empty cell",
 		"Board is not solved",
 		"File cannot be opened",
-		"File error"
+
+		"File error",
 		"Puzzle is not valid - cannot be saved",
 		"Puzzle contain's error values",
 		"Invalid range",
