@@ -146,7 +146,6 @@ void list_removeHead(list *list){
 	list->head->prev = NULL;
 	list->logicalLength--;
 	list->currentElement = list->head;
-	list->freeFn(node->data);
 	free(node);
 }
 
