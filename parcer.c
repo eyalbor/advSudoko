@@ -308,7 +308,7 @@ ADTErr parse_file (FILE* fp, Game* _game){
 				c = count%N;
 				dig = atoi(read_tok);
 				if(dig != 0){
-					err = validate_digit(dig,r,c,_game);
+					err = validate_digit(_game->board,_game->cols,_game->rows,r,c,dig);
 					if (read_tok[strlen(read_tok)-1] == '.' && _game->mode == SOLVE){
 						((_game->board)[r][c]).status = FIXED;
 					}

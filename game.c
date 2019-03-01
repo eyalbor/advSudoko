@@ -11,6 +11,9 @@
 #include "main_aux.h"
 #include "solve.h"
 
+/**
+ * eyal
+ */
 void freeFuncSingleSet(void * _item){
 	free(_item);
 }
@@ -132,7 +135,7 @@ ADTErr set ( Game* _game, int _col, int _row, int _dig){
 			_game->board[_row][_col].status = HIDDEN;
 			_game->board[_row][_col].num = _dig;
 		}
-		else if (!validate_digit(_dig,_row,_col,_game)){
+		else if (!validate_digit(_game->board,_game->cols,_game->rows,_row,_col,_dig)){
 			_game->board[_row][_col].status = ERRONEOUS;
 		}
 		else{
@@ -407,18 +410,56 @@ ADTErr exit_game (Game* _game){
 }
 
 
-bool validate_row(int _dig, int _row, Game* _game){
+
+bool validate_row(Num** board, int row, int col,int checked_value, int size){
+	int i;
+	for (i = 0; i< size; i++)
+	{
+		if (i != col)
+		{
+			if (board[row][i].num== checked_value)
+			{
+				return FALSE;
+			}
+		}
+	}
 	return TRUE;
 }
 
-bool validate_col(int _dig, int _col, Game* _game){
+bool validate_col(Num** board, int row, int col, int checked_value, int size){
+	int i;
+	for (i = 0; i< size; i++)
+	{
+		if (i != row)
+		{
+			if (board[i][col].num == checked_value)
+			{
+				return FALSE;
+			}
+		}
+	}
+	return TRUE;
+	}
+
+bool validate_block(Num** board, int row, int col, int checked_value, int block_rowsize, int block_colsize){
+	int a, b, c, d;
+	a = (row / block_rowsize) ;
+	b = (col / block_colsize) ; /* the same with the col*/
+	for (c = 0; c < block_colsize; c++)
+	{ /*  iterates over the elements in the block */
+		for (d = 0; d < block_rowsize; d++)
+		{
+			if ( !((a+c==row) &&(b+d==col)) )
+			{
+				if (board[a + c][b + d].num == checked_value)
+				{
+					return FALSE;
+				}
+			}
+		}
+	}
 	return TRUE;
 }
-
-bool validate_block(int _dig, int _row, int _col, Game* _game){
-	return TRUE;
-}
-
 /**
 * checks if a placement of a given digit in a given cell is valid,
 * @Input
@@ -431,14 +472,31 @@ bool validate_block(int _dig, int _row, int _col, Game* _game){
 * FALSE - if one of the validations has failed
 * TRUE - if all validations succeeded
 */
-bool validate_digit (int _dig, int _row, int _col, Game* _game) {
+
+bool validate_digit (Num** board, int blockRow, int blockCol,int cell_row, int cell_col , int _dig) {
+	int size;
+	size=blockCol*blockRow;
 	if (_dig == 0)
 		return TRUE;
-	if (!validate_row(_dig, _row, _game))
+	if (!validate_row(board,cell_row, cell_col,_dig,size))
 		return FALSE;
-	if (!validate_col(_dig, _col, _game))
+	if (!validate_col(board,cell_row, cell_col,_dig,size))
 		return FALSE;
-	if (!validate_block(_dig,_row,_col,_game))
+	if (!validate_block(board,cell_row, cell_col,_dig,blockRow,blockCol))
 		return FALSE;
 	return TRUE;
+}
+
+bool board_isSolvable(Num** board, int blockRow, int blockCol){
+	int i,j;
+	for(i=0; i<blockRow*blockCol;i++)
+	{
+		for(j=0; j<blockRow*blockCol;j++)
+		{
+			if(!validate_digit(board, blockRow, blockCol,i, j , board[i][j].num))
+			{
+			return FALSE;
+			}
+		}
+	}return TRUE;
 }
