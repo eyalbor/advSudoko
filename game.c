@@ -11,6 +11,9 @@
 #include "main_aux.h"
 #include "solve.h"
 
+/**
+ * release func to free item from list
+ */
 void freeFuncSingleSet(void * _item){
 	free(_item);
 }
