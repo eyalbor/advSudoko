@@ -73,7 +73,7 @@ void list_appendAfter(list *list, void *elementToAdd){
 
 }
 
-void* getCurrentElement(list* list){
+listNode* list_getCurrentElement(list* list){
 	return list->currentElement;
 }
 
@@ -136,29 +136,28 @@ void list_for_each(list *list, listIterator iterator)
   }
 }
 
-void list_head(list *list, void *element, bool removeFromList)
-{
-  assert(list->head != NULL);
-
-  listNode *node = list->head;
-  node->data = element;
-
-  if(removeFromList) {
-    list->head = node->next;
-    list->head->prev = NULL;
-    list->logicalLength--;
-    list->currentElement = list->head;
-
-    list->freeFn(node->data);
-    free(node);
-  }
+/**
+ * remove the head from the list
+ */
+void list_removeHead(list *list){
+	assert(list->head != NULL);
+	listNode *node = list->head;
+	list->head = node->next;
+	list->head->prev = NULL;
+	list->logicalLength--;
+	list->currentElement = list->head;
+	list->freeFn(node->data);
+	free(node);
 }
 
-void list_tail(list *list, void *element)
+listNode* list_head(list *list)
 {
-  assert(list->tail != NULL);
-  listNode *node = list->tail;
-  node->data = element;
+  return list->head;
+}
+
+listNode* list_tail(list *list)
+{
+  return list->tail;
 }
 
 int list_size(list *list)
@@ -179,4 +178,16 @@ void printList(list* list , printFunc printFunc)
     	printFunc(node->data);
         node = node->next;
     }
+}
+
+void list_undoCurrentElement(list* list){
+	if(list->currentElement!=NULL){
+		list->currentElement = list->currentElement->prev;
+	}
+}
+
+void list_redoCurrentElement(list* list){
+	if(list->currentElement!=NULL){
+		list->currentElement = list->currentElement->next;
+	}
 }

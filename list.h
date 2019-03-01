@@ -64,7 +64,7 @@ void list_appendAfter(list *list, void *elementToAdd);
 /**
  * return the position of where the user add the last Node to list
  */
-void* getCurrentElement(list* list);
+listNode* list_getCurrentElement(list* list);
 
 /**
  * returns the number of items in the list
@@ -77,18 +77,33 @@ int list_size(list *list);
 void list_for_each(list *list, listIterator iterator);
 
 /**
- * returns the head of the list (optionally removing it at the same time)
+ * returns the head of the list
  */
-void list_head(list *list, void *element, bool removeFromList);
+listNode* list_head(list *list);
+
+/**
+ * remove the head from the list
+ */
+void list_removeHead(list *list);
 
 /**
  * returns the tail of the list
  */
-void list_tail(list *list, void *element);
+listNode* list_tail(list *list);
 
 /**
  * print the list
  */
 void printList(list* node , printFunc printFunc);
+
+/**
+ * help function to undo
+ */
+void list_undoCurrentElement(list* list);
+
+/**
+ * help function to redo
+ */
+void list_redoCurrentElement(list* list);
 
 #endif

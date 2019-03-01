@@ -164,6 +164,10 @@ ADTErr set ( Game* _game, int _col, int _row, int _dig){
 		}
 
 		list_appendAfter(stepNewList,move_step);
+		if(_game->moveList->currentElement != NULL && _game->moveList->currentElement->next != NULL){
+			/* delete all node after the current Node*/
+			list_deleteAfter(_game->moveList);
+		}
 		list_appendAfter(_game->moveList,stepNewList);
 	}
 
@@ -190,10 +194,44 @@ ADTErr generate (Game* _game, int _x, int _y){
 }
 
 ADTErr undo (Game* _game){
+	listNode* listSteps; /* data is list* */
+	listNode* sNode; /* data is SingleSet* */
+	SingleSet* ss;
+
+	if(_game->moveList!=NULL){
+		listSteps = list_getCurrentElement(_game->moveList);
+		if(listSteps != NULL && listSteps->data != NULL){
+			sNode = list_head(listSteps->data);
+			while(sNode != NULL){
+				ss = sNode->data;
+				_game->board[ss->row][ss->col].num = ss->prev_val;
+				_game->board[ss->row][ss->col].status = ss->prev_stat;
+				sNode = sNode->next;
+			}
+		}
+		list_undoCurrentElement(_game->moveList);
+	}
 	return ERR_OK;
 }
 
 ADTErr redo (Game* _game){
+	listNode* listSteps; /* data is list* */
+	listNode* sNode; /* data is SingleSet* */
+	SingleSet* ss;
+
+	if(_game->moveList!=NULL){
+		list_redoCurrentElement(_game->moveList);
+		listSteps = list_getCurrentElement(_game->moveList);
+		if(listSteps != NULL && listSteps->data != NULL){
+			sNode = list_head(listSteps->data);
+			while(sNode != NULL){
+				ss = sNode->data;
+				_game->board[ss->row][ss->col].num = ss->new_val;
+				_game->board[ss->row][ss->col].status = ss->new_stat;
+				sNode = sNode->next;
+			}
+		}
+	}
 	return ERR_OK;
 }
 
