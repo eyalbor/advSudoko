@@ -28,7 +28,6 @@ typedef enum num_status {
 */
 typedef struct sudoku_number {
 	int num;
-//	int alt_num;
 	STAT status;
 } Num;
 
@@ -40,13 +39,14 @@ typedef struct set_cell {
 	int new_val; /*new value of cell*/
 	int col;
 	int row; /*coordinates of cell*/
+	STAT prev_stat;
+	STAT new_stat;
 } SingleSet;
 
 typedef struct _game{
 	MODE mode;
 	bool mark_error; /* determine whether errors in the sudoku are display */
 	list* moveList;
-	listNode* currentStepNode;
 	Num** board;
 	int rows;
 	int cols;
@@ -209,9 +209,9 @@ ADTErr generate (Game* _game, int _x, int _y);
 
 /**
  * undo
- *@Input:
+ *@ Input:
  * 		Game*
- *@Return if there us not move to redo return CANNOT_UNDO
+ *@ Return if there us not move to redo return CANNOT_UNDO
  *
  * MODE AVAILIBALE: SOLVE, EDIT
  */

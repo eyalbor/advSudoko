@@ -18,6 +18,12 @@ void freeFuncSingleSet(void * _item){
 	free(_item);
 }
 
+void freeFuncStepsList(void * _item){
+	list* listInMoveList = (list*)_item;
+	list_destroy(listInMoveList);
+}
+
+
 /**
 * erroneous_board - checks if the board contains error values
 *
@@ -63,8 +69,7 @@ bool isGameFinish(Game* _game){
 Game* game_init(){
 	Game* game = (Game*)malloc(sizeof(game));
 	game->moveList = malloc(sizeof(list));
-	list_new(game->moveList,sizeof(SingleSet),freeFuncSingleSet);
-	game->currentStepNode = NULL;
+	list_new(game->moveList,sizeof(list*),freeFuncStepsList);
 	game->board = NULL;
 	game->mark_error = TRUE;
 	game->mode = INIT;
@@ -105,6 +110,15 @@ Num** create_empty_board(int _m, int _n){
 	return board;
 }
 
+void setMoveStep(int _row, int _col, int _dig, SingleSet* move_step,
+		Game* _game) {
+	move_step->prev_val = _game->board[_row][_col].num;
+	move_step->new_val = _dig;
+	move_step->col = _col;
+	move_step->row = _row;
+	move_step->prev_stat = _game->board[_row][_col].status;
+}
+
 /**
  * set - sets a cell to the required number.
  * adds the move to the move list,
@@ -112,13 +126,13 @@ Num** create_empty_board(int _m, int _n){
  * when board is full, prints message if it is solved or erroneous. changes mode to INIT if it's solved.
  */
 ADTErr set ( Game* _game, int _col, int _row, int _dig){
-	int prev_val;
-	STAT prev_stat;
 	SingleSet* move_step;
-	int N = _game->cols*_game->rows;
+	list* stepNewList;
 
-	_row=_row-1;
-	_col=_col-1;
+	int N = _game->cols * _game->rows;
+
+	_row =_row - 1;
+	_col =_col - 1;
 
 	if(_col < 0 || _row < 0 || _dig < 0 || _col >= N || _row >= N || _dig > N){ /*check for range*/
 		return INVALID_RANGE;
@@ -128,20 +142,29 @@ ADTErr set ( Game* _game, int _col, int _row, int _dig){
 	}
 
 	/*set the cell*/
-	prev_val = _game->board[_row][_col].num;
-	prev_stat = _game->board[_row][_col].status;
-	if (prev_val != _dig) { /*if they are the same, board is not changing, and we don't consider it as a move*/
+	if (_game->board[_row][_col].num != _dig) { /*if they are the same, board is not changing, and we don't consider it as a move*/
+
+		stepNewList = malloc(sizeof(list));
+		list_new(stepNewList, sizeof(SingleSet*) ,freeFuncSingleSet);
+		move_step = malloc(sizeof(SingleSet));
+		setMoveStep(_row, _col, _dig, move_step, _game);
 		if (_dig == 0) { /*emptying a cell*/
 			_game->board[_row][_col].status = HIDDEN;
 			_game->board[_row][_col].num = _dig;
+			move_step->new_stat = HIDDEN;
 		}
 		else if (!validate_digit(_game->board,_game->cols,_game->rows,_row,_col,_dig)){
 			_game->board[_row][_col].status = ERRONEOUS;
+			move_step->new_stat = ERRONEOUS;
 		}
 		else{
 			_game->board[_row][_col].status = SHOWN;
 			_game->board[_row][_col].num = _dig;
+			move_step->new_stat = SHOWN;
 		}
+
+		list_appendAfter(stepNewList,move_step);
+		list_appendAfter(_game->moveList,stepNewList);
 	}
 
 
