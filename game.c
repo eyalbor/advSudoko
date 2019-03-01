@@ -12,7 +12,7 @@
 #include "solve.h"
 
 /**
- * eyal
+ * release func to free item from list
  */
 void freeFuncSingleSet(void * _item){
 	free(_item);
