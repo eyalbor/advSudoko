@@ -29,6 +29,16 @@ ADTErr solve_ilp(Game* _game){
 ADTErr solve_lp(Game* _game){
 	return ERR_OK;
 }
+/** this functions are temporary see what I wrote in the h file **/ 
+ADTErr solve_ilpDuplicated(Game* _game, Num** temp_board){
+	return ERR_OK;
+}
+
+ADTErr solve_lpDuplicated(Game* _game, Num** temp_board){
+	return ERR_OK;
+}
+
+
 
 int findnext_legalvalue(Num** board, int blockRow, int blockCol,StackCell* cell, int currentValue){
 	int size;
@@ -47,6 +57,7 @@ int findnext_legalvalue(Num** board, int blockRow, int blockCol,StackCell* cell,
 StackCell* find_nextEmptyCell(Num** board,int board_size){
 	int i, j;
 	StackCell* board_cell;
+	board_cell=malloc(sizeof(StackCell));
 
 	for(i=0; i<board_size;i++)
 	{
@@ -73,38 +84,40 @@ int backtrack_Algo(Num** current_board, int block_row, int block_col)
 	int count = 0,old_value,size, row, col;
 	StackCell* next_cell;
 	StackCell dummy_cell;
-
-	stack* mystack = malloc(1*sizeof(stack));
+	Num** temp_board;
+	temp_board = copy_boards ( current_board , block_row, block_col);
+	stack* mystack = malloc (1 * sizeof(stack));
 	/** create the stack**/
-	size = block_row*block_col;
-	stack_new(mystack,sizeof(StackCell),freeFuncSingleStuchCell);
-	next_cell = malloc(sizeof(StackCell));
+	size = block_row * block_col;
+	stack_new ( mystack , sizeof (StackCell) , freeFuncSingleStuchCell );
+	next_cell = malloc ( sizeof ( StackCell ) );
+
 	/** find next empty cell. if no cell is empty we get value of -1 in row and in column. **/
-	next_cell = find_nextEmptyCell(current_board,size);
-	next_cell->value = findnext_legalvalue( current_board, block_row, block_col,next_cell, 1);
+	next_cell = find_nextEmptyCell (current_board,size);
+	next_cell->value = findnext_legalvalue( temp_board, block_row, block_col,next_cell, 1);
 	if ((next_cell->col != -1) && (next_cell->value != -1))
 	{
-		stack_push(mystack, next_cell);
+		stack_push (mystack, next_cell);
 		row = next_cell->row - 1;
 		col = next_cell->col -1;
-		current_board[row][col].num = next_cell->value;
+		temp_board[row][col].num = next_cell->value;
 	}
-	while(stack_size(mystack)!=0)
+	while (stack_size (mystack) != 0)
 	{
-		next_cell= find_nextEmptyCell(current_board,size);
-		if(next_cell->col!=-1)
+		next_cell= find_nextEmptyCell (temp_board,size);
+		if (next_cell->col != -1)
 		{
-			stack_push(mystack,next_cell);
+			stack_push (mystack,next_cell);
 		}
 		else
 		{
-			if(board_isSolvable(current_board, block_row,block_col))
+			if (board_isSolvable(temp_board, block_row,block_col))
 			{
 				count++;
 			}
-			stack_pop(mystack,next_cell);
+			stack_pop (mystack,next_cell);
 			old_value=next_cell->value;
-			next_cell->value=findnext_legalvalue( current_board, block_row, block_col,next_cell, old_value+1);
+			next_cell->value = findnext_legalvalue ( temp_board , block_row , block_col ,next_cell , old_value+1);
 			if(next_cell->value==-1)
 			{
 				stack_pop(mystack, &dummy_cell);
@@ -116,4 +129,3 @@ int backtrack_Algo(Num** current_board, int block_row, int block_col)
 	}
 	return count;
 }
-

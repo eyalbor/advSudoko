@@ -62,9 +62,33 @@ void free_board(Game* _game){
 	 }
 }
 
+
+/**isGameFinish- checks whether the board is filled and all values are legal
+ *  @Input:
+* 	_game - the Sudoku game
+* 	@ return bool True/False
+ *   **/
 bool isGameFinish(Game* _game){
-	return FALSE;
+	int i , j , board_rowsize;
+	board_rowsize =_game->cols * _game->rows;
+	for ( i = 0 ; i < board_rowsize ; i++)
+	{
+		for ( j= 0 ; j < board_rowsize ; j++)
+		{
+			if(_game->board[i][j].num==0)
+			{
+				return FALSE;
+			}
+
+			else if ( ! validate_digit (_game->board, _game->rows, _game->cols , i ,  j , _game->board[i][j].num))
+			{
+				return FALSE;
+			}
+		}
+	}
+	return TRUE;
 }
+
 
 Game* game_init(){
 	Game* game = (Game*)malloc(sizeof(game));
@@ -84,8 +108,51 @@ void game_destroy(Game* _game){
 	free(_game);
 }
 
+** copy boards- receive a board and duplicate it.
+ * @param
+ * -old board
+ * int _m- size of rows in a block
+ * int _n- size of cols in a block
+ * @return
+ * new board **/
+
+Num** copy_boards ( Num** old_board , int _m, int _n){
+	int i;
+	Num** new_board;
+	new_board = create_empty_board ( _m ,  _n) ;
+	for ( i = 0 ;  i < _m*_n ; i++ )
+	{
+		memcpy ( new_board [i] , old_board [i] , _m*_n);
+	}
+}
+
+
+
+
+/**validate-validates the current board using ILP, ensuring it is solvable.
+ * if the board is erroneous the program prints an error message and the command is not executed
+ * @ Input
+ * _game- the sudoko game
+ * @ Output
+ * ADTErr-is board solvable  **/
+
 ADTErr validate (Game* _game){
-	return ERR_OK;
+	ADTErr err;
+	int _N;
+	Num** current_board;
+	_N=_game->cols*_game->rows;
+	if ( ( err = erroneous_board ( _game-> board , _N ) ) != ERR_OK )
+	{
+		return err;
+	}
+	else{
+		 current_board=copy_boards ( _game->board ,_game->rows , _game->cols);
+		err= solve_ilpDuplicated( _game , current_board);
+	}
+	/** we still need to free the memory allocated for the board.
+	 * because the free_board function receive game and not board i'm leaving it for now until we decide
+	 * to change the function **/
+	return err;
 }
 
 
@@ -387,7 +454,19 @@ ADTErr edit (Game* _game, char* _parsed_command){
 	return res;
 }
 
+
 ADTErr num_of_solutions (Game* _game){
+	int num_solutions , _N;
+	ADTErr err;
+	_N = _game->cols * _game->rows;
+	if ( ( err = erroneous_board ( _game-> board , _N ) ) != ERR_OK )
+	{
+		return err;
+	}
+	else{
+		num_solutions = backtrack_Algo (_game->board, _game->rows , _game->cols);
+		printf(" number of solutions is : %d", num_solutions);
+	}
 	return ERR_OK;
 }
 

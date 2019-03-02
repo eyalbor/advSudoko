@@ -74,6 +74,16 @@ Game* game_init();
  *
  * 	clear all resources
  */
+
+/** copy boards- receive a board and duplicate it.
+ * @param
+ * -old board
+ * int _m- size of rows in a block
+ * int _n- size of cols in a block
+ * @return
+ * new board **/
+Num** copy_boards ( Num** old_board , int _m, int _n);
+
 void game_destroy(Game* _game);
 
 /**
