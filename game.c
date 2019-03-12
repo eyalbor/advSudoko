@@ -108,7 +108,7 @@ void game_destroy(Game* _game){
 	free(_game);
 }
 
-** copy boards- receive a board and duplicate it.
+/** copy boards- receive a board and duplicate it.
  * @param
  * -old board
  * int _m- size of rows in a block
@@ -116,7 +116,7 @@ void game_destroy(Game* _game){
  * @return
  * new board **/
 
-Num** copy_boards ( Num** old_board , int _m, int _n){
+Num** copy_boards (Num** old_board , int _m, int _n){
 	int i;
 	Num** new_board;
 	new_board = create_empty_board ( _m ,  _n) ;
@@ -124,6 +124,7 @@ Num** copy_boards ( Num** old_board , int _m, int _n){
 	{
 		memcpy ( new_board [i] , old_board [i] , _m*_n);
 	}
+	return new_board;
 }
 
 
@@ -464,7 +465,7 @@ ADTErr num_of_solutions (Game* _game){
 		return err;
 	}
 	else{
-		num_solutions = backtrack_Algo (_game->board, _game->rows , _game->cols);
+		num_solutions = backtrack_Algo(_game->board, _game->rows , _game->cols);
 		printf(" number of solutions is : %d", num_solutions);
 	}
 	return ERR_OK;

@@ -24,5 +24,7 @@ ADTErr solve_ilpDuplicated(Game* _game, Num** temp_board);
 
 ADTErr solve_lpDuplicated(Game* _game, Num** temp_board);
 
+int backtrack_Algo(Num** current_board, int block_row, int block_col);
+
 #endif
 

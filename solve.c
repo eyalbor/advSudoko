@@ -86,6 +86,9 @@ int backtrack_Algo(Num** current_board, int block_row, int block_col)
 	StackCell dummy_cell;
 	Num** temp_board;
 	temp_board = copy_boards ( current_board , block_row, block_col);
+
+
+
 	stack* mystack = malloc (1 * sizeof(stack));
 	/** create the stack**/
 	size = block_row * block_col;

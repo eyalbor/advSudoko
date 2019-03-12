@@ -2,6 +2,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include "bool.h"
 #include "list.h"
 
@@ -30,18 +31,19 @@ void list_destroy(list *list)
 }
 
 void list_deleteAfter(list *list){
-  listNode *current, *next;
+  listNode *next, *temp;
   if(list->currentElement != NULL){
-	  current = list->currentElement->next;
-	  next = current;
-	  while(current != NULL) {
+	  next = list->currentElement->next;
+	  list->currentElement->next = NULL;
+	  while(next != NULL) {
 		if(list->freeFn) {
-		  list->freeFn(current->data);
+		  list->freeFn(next->data);
 		}
-		next = current->next;
-		free(current->data);
-		free(current);
-		current = next;
+		temp = next;
+		next = next->next;
+		free(temp);
+		temp = NULL;
+		list->elementSize--;
 	  }
   }
 }
@@ -82,9 +84,10 @@ listNode* list_getCurrentElement(list* list){
  */
 void list_prepend(list *list, void *element)
 {
-  listNode *node = malloc(sizeof(listNode));
+  int* i = NULL;
+  listNode* node = malloc(sizeof(listNode));
   node->data = element;
-
+  i = (int*)element;
   node->next = list->head;
 
   node->prev = NULL;
@@ -97,7 +100,6 @@ void list_prepend(list *list, void *element)
   if(!list->tail) {
     list->tail = list->head;
   }
-  list->currentElement = list->head;
   list->logicalLength++;
 }
 
@@ -110,6 +112,7 @@ void list_append(list *list, void *element)
   node->next = NULL;
   node->prev = NULL;
 
+  /*memcpy(node->data, element, list->elementSize);*/
   node->data = element;
 
   if(list->logicalLength == 0) {
@@ -145,7 +148,8 @@ void list_removeHead(list *list){
 	list->head = node->next;
 	list->head->prev = NULL;
 	list->logicalLength--;
-	list->currentElement = list->head;
+	/*list->currentElement = list->head;*/
+	list->freeFn(node->data);
 	free(node);
 }
 

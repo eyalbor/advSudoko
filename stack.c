@@ -6,7 +6,7 @@
 void stack_new(stack *s, int elementSize, freeFunction freeFn)
 {
   s->list = malloc(sizeof(list));
-  // make sure the malloc call didn't fail...
+  /* make sure the malloc call didn't fail...*/
   assert(s->list != NULL);
 
   list_new(s->list, elementSize, freeFn);
@@ -26,20 +26,21 @@ void stack_push(stack *s, void *element)
 void stack_pop(stack *s, void *element)
 {
 	listNode* node;
-	// don't pop an empty stack!
+	/* don't pop an empty stack! */
 	assert(stack_size(s) > 0);
-	node = list_head(s->list);
-	element = node;
+	//node = list_head(s->list);
+	/*element = node->data;*/
 	list_removeHead(s->list);
 }
 
-void stack_peek(stack *s, void *element)
+void* stack_peek(stack *s)
 {
 	listNode* node;
-	// don't pop an empty stack!
+	/* don't pop an empty stack! */
 	assert(stack_size(s) > 0);
 	node = list_head(s->list);
-	element = node;
+	return  node->data;
+
 }
 
 int stack_size(stack *s)

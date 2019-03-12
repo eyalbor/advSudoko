@@ -7,9 +7,48 @@
 #include "game.h"
 #include "parcer.h"
 
+#include "list.h"
+#include "stack.h"
+#include <stdlib.h>
 
+void freeFuncStepsList2(void * _item){
+	free((int*)_item);
+}
+
+bool iterate_int(void *data)
+{
+  printf("Found value: %d\n", *(int *)data);
+  return TRUE;
+}
 
 int main (int argc, char** argv) {
+
+//	int i;
+//	int* item;
+//	int* item2;
+//	stack* l;
+//	l = (stack*)malloc(sizeof(stack));
+//	stack_new(l, sizeof(int*), freeFuncStepsList2);
+//
+//	  for(i = 1; i <= 10; i++) {
+//		  item = malloc(sizeof(int));
+//		  *item = i;
+//		  stack_push(l, item);
+//	  }
+//	  item2 = malloc(sizeof(int));
+//	  *item2 = -1;
+//	  stack_peek(l,item);
+//	  printf("%d\n", *item);
+//	  stack_pop(l,item);
+//	  stack_pop(l,item);
+//	  stack_pop(l,item);
+//	  list_for_each(l->list, iterate_int);
+//	  item2 = (int*)stack_peek(l,item2);
+//	  printf("%d\n", *item2);
+//
+//	stack_destroy(l);
+
+
 
 	int command_res = 1;
 	Game* game = NULL;
