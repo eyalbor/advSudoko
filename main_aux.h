@@ -8,7 +8,6 @@
 #ifndef MAIN_AUX_H_
 #define MAIN_AUX_H_
 
-#include "ADT_Error.h"
 #include "game.h"
 
 /**

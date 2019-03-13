@@ -4,8 +4,8 @@
 
 #include "macro.h"
 #include "bool.h"
-#include "list.h"
 #include "ADT_Error.h"
+#include "list.h"
 #include "game.h"
 #include "parcer.h"
 #include "main_aux.h"
@@ -172,14 +172,13 @@ Num** create_empty_board(int _m, int _n){
 		for (j = 0; j < N; j++) {
 			board[i][j].num = 0;
 			board[i][j].status = HIDDEN;
-			//board[i][j].alt_num=0;
+			/*board[i][j].alt_num=0;*/
 		}
 	}
 	return board;
 }
 
-void setMoveStep(int _row, int _col, int _dig, SingleSet* move_step,
-		Game* _game) {
+void setMoveStep(int _row, int _col, int _dig, SingleSet* move_step, Game* _game) {
 	move_step->prev_val = _game->board[_row][_col].num;
 	move_step->new_val = _dig;
 	move_step->col = _col;
@@ -192,8 +191,6 @@ void setMoveStep(int _row, int _col, int _dig, SingleSet* move_step,
  * adds the move to the move list,
  * changes relevant cell's status to erroneous and updates the number of hidden cells.
  * when board is full, prints message if it is solved or erroneous. changes mode to INIT if it's solved.
- *
- *
  */
 ADTErr set ( Game* _game, int _col, int _row, int _dig){
 	SingleSet* move_step;

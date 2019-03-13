@@ -3,12 +3,11 @@
 #include "macro.h"
 #include "bool.h"
 #include "ADT_Error.h"
-#include "main_aux.h"
+#include "list.h"
 #include "game.h"
+#include "main_aux.h"
 #include "parcer.h"
 
-#include "list.h"
-#include "stack.h"
 #include <stdlib.h>
 
 void freeFuncStepsList2(void * _item){
@@ -21,32 +20,32 @@ bool iterate_int(void *data)
   return TRUE;
 }
 
-int main (int argc, char** argv) {
+int main () {
+/*
+	int i;
+	int* item;
+	int* item2;
+	stack* l;
+	l = (stack*)malloc(sizeof(stack));
+	stack_new(l, sizeof(int*), freeFuncStepsList2);
 
-//	int i;
-//	int* item;
-//	int* item2;
-//	stack* l;
-//	l = (stack*)malloc(sizeof(stack));
-//	stack_new(l, sizeof(int*), freeFuncStepsList2);
-//
-//	  for(i = 1; i <= 10; i++) {
-//		  item = malloc(sizeof(int));
-//		  *item = i;
-//		  stack_push(l, item);
-//	  }
-//	  item2 = malloc(sizeof(int));
-//	  *item2 = -1;
-//	  printf("%d\n", *item);
-//	  stack_pop(l,item);
-//	  stack_pop(l,item);
-//	  stack_pop(l,item);
-//	  list_for_each(l->list, iterate_int);
-//	  item2 = (int*)stack_peek(l);
-//	  printf("%d\n", *item2);
-//
-//	stack_destroy(l);
+	  for(i = 1; i <= 10; i++) {
+		  item = malloc(sizeof(int));
+		  *item = i;
+		  stack_push(l, item);
+	  }
+	  item2 = malloc(sizeof(int));
+	  *item2 = -1;
+	  printf("%d\n", *item);
+	  stack_pop(l,item);
+	  stack_pop(l,item);
+	  stack_pop(l,item);
+	  list_for_each(l->list, iterate_int);
+	  item2 = (int*)stack_peek(l);
+	  printf("%d\n", *item2);
 
+	stack_destroy(l);
+*/
 
 
 	int command_res = 1;
@@ -59,7 +58,6 @@ int main (int argc, char** argv) {
 	while(command_res > 0){
 		printf("Enter your command:\n");
 		if(mainAux_readCommand(commandStr) == TRUE){
-			//printf("%s",commandStr);
 			command_res = parcer_doCommand(game,commandStr);
 			if(command_res != EXIT && command_res!=ERR_OK){
 				mainAux_printError((ADTErr)command_res);

@@ -9,7 +9,7 @@ $(EXEC): $(OBJS)
 	$(CC) $(OBJS) $(GUROBI_LIB) -o $@
 all: $(OBJS)
 	$(CC) $(COMP_FLAG) $(OBJS) $(GUROBI_LIB) -o $(EXEC)
-main.o: main.c macro.h bool.h ADT_Error.h main_aux.h game.h parser.h list.h
+main.o: main.c macro.h bool.h ADT_Error.h main_aux.h game.h parcer.h
 	$(CC) $(COMP_FLAG) -c $*.c
 main_aux.o: main_aux.c main_aux.h bool.h macro.h ADT_Error.h game.h macro.h
 	$(CC) $(COMP_FLAG) -c $*.c
@@ -17,9 +17,9 @@ ADT_Error.o: ADT_Error.c ADT_Error.h
 	$(CC) $(COMP_FLAG) -c $*.c
 solver.o: solver.c solver.h game.h ADT_Error.h parcer.h stack.h list.h bool.h macro.h
 	$(CC) $(COMP_FLAG) $(GUROBI_COMP) -c $*.c
-game.o: game.c game.h solver.h stack.h list.h bool.h macro.h ADT_Error.h parcer.h main_aux.h
+game.o: game.c game.h solve.h stack.h list.h bool.h macro.h ADT_Error.h parcer.h main_aux.h
 	$(CC) $(COMP_FLAG) -c $*.c
-parser.o: parser.c parser.h main_aux.h game.h solver.h list.h bool.h macro.h
+parser.o: parser.c parser.h main_aux.h game.h solve.h list.h bool.h macro.h
 	$(CC) $(COMP_FLAG) -c $*.c
 list.o: list.c list.h bool.h
 	$(CC) $(COMP_FLAG) -c $*.c

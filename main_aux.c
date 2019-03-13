@@ -5,10 +5,8 @@
 #include "bool.h"
 #include "macro.h"
 #include "ADT_Error.h"
-#include "game.h"
 #include "main_aux.h"
-
-
+#include "game.h"
 
 
 bool mainAux_readCommand(char* command){
