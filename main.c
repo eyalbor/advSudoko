@@ -37,13 +37,12 @@ int main (int argc, char** argv) {
 //	  }
 //	  item2 = malloc(sizeof(int));
 //	  *item2 = -1;
-//	  stack_peek(l,item);
 //	  printf("%d\n", *item);
 //	  stack_pop(l,item);
 //	  stack_pop(l,item);
 //	  stack_pop(l,item);
 //	  list_for_each(l->list, iterate_int);
-//	  item2 = (int*)stack_peek(l,item2);
+//	  item2 = (int*)stack_peek(l);
 //	  printf("%d\n", *item2);
 //
 //	stack_destroy(l);

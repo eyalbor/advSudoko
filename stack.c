@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "bool.h"
+#include "list.h"
 #include "stack.h"
 
 void stack_new(stack *s, int elementSize, freeFunction freeFn)
@@ -25,7 +26,6 @@ void stack_push(stack *s, void *element)
 
 void stack_pop(stack *s, void *element)
 {
-	listNode* node;
 	/* don't pop an empty stack! */
 	assert(stack_size(s) > 0);
 	//node = list_head(s->list);

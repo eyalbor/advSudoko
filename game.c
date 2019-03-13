@@ -192,6 +192,8 @@ void setMoveStep(int _row, int _col, int _dig, SingleSet* move_step,
  * adds the move to the move list,
  * changes relevant cell's status to erroneous and updates the number of hidden cells.
  * when board is full, prints message if it is solved or erroneous. changes mode to INIT if it's solved.
+ *
+ *
  */
 ADTErr set ( Game* _game, int _col, int _row, int _dig){
 	SingleSet* move_step;
@@ -223,6 +225,7 @@ ADTErr set ( Game* _game, int _col, int _row, int _dig){
 		}
 		else if (!validate_digit(_game->board,_game->cols,_game->rows,_row,_col,_dig)){
 			_game->board[_row][_col].status = ERRONEOUS;
+			_game->board[_row][_col].num = _dig;
 			move_step->new_stat = ERRONEOUS;
 		}
 		else{
@@ -343,9 +346,6 @@ ADTErr hint (Game* _game, int _userRow, int _userCol){
 	return generalHint(_game,_userRow,_userCol,TRUE);
 }
 
-
-
-
 /**
  * writeNumToFile writes the number in a required cell to a given file.
  * @Input
@@ -415,6 +415,12 @@ ADTErr solve(Game* _game, char* _path){
 
 
 ADTErr reset (Game* _game){
+	if(_game->moveList!=NULL){
+		while(_game->moveList->currentElement != _game->moveList->head){
+			undo(_game);
+		}
+		undo(_game);
+	}
 	return ERR_OK;
 }
 

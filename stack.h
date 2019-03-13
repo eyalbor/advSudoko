@@ -3,8 +3,6 @@
 
 /* https://pseudomuto.com/2013/06/implementing-a-generic-stack-in-c/ */
 
-#include "list.h"
-
 typedef struct {
   list *list;
 } stack;

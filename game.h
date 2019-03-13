@@ -168,6 +168,9 @@ ADTErr printBoard(Game* _game);
  * 		BOARD_ERRORS - if the last cell if filled then the board can be error return BOARD_ERRORS, the user must undo
  * 		PUZZLE_SOLVED - if the puzzle finish correct then the mode of the game set to INIT
  *
+ * edit mode we mark the error regardless of the value markerror
+ * solve can input error and show the error if mark error is true=1;
+ *
  * MODE AVAILIBALE: SOLVE, EDIT
  */
 ADTErr set ( Game* _game, int _col, int _row, int _dig);

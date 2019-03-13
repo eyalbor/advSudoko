@@ -56,20 +56,23 @@ void list_appendAfter(list *list, void *elementToAdd){
 		 node->data = elementToAdd;
 
 	    /* 4. Make next of new node as next of prev_node */
-		node->next = list->currentElement->next;
+		if(list->currentElement!=NULL){
+			node->next = list->currentElement->next;
+		    /* 5. Make the next of prev_node as new_node */
+			list->currentElement->next = node;
 
-	    /* 5. Make the next of prev_node as new_node */
-		list->currentElement->next = node;
+		    /* 6. Make prev_node as previous of new_node */
+		    node->prev = list->currentElement;
 
-	    /* 6. Make prev_node as previous of new_node */
-	    node->prev = list->currentElement;
+		    /* 7. Change previous of new_node's next node */
+		    if (node->next != NULL)
+		        node->next->prev = node;
 
-	    /* 7. Change previous of new_node's next node */
-	    if (node->next != NULL)
-	        node->next->prev = node;
-
-	    list->currentElement = node;
-
+		    list->currentElement = node;
+		}
+		else{
+			list_append(list,elementToAdd);
+		}
 	}
 	list->elementSize++;
 
@@ -84,10 +87,8 @@ listNode* list_getCurrentElement(list* list){
  */
 void list_prepend(list *list, void *element)
 {
-  int* i = NULL;
   listNode* node = malloc(sizeof(listNode));
   node->data = element;
-  i = (int*)element;
   node->next = list->head;
 
   node->prev = NULL;
@@ -191,6 +192,11 @@ void list_undoCurrentElement(list* list){
 
 void list_redoCurrentElement(list* list){
 	if(list->currentElement!=NULL){
-		list->currentElement = list->currentElement->next;
+		if(list->currentElement->next!=NULL){
+			list->currentElement = list->currentElement->next;
+		}
+	}
+	else{
+		list->currentElement = list->head;
 	}
 }
