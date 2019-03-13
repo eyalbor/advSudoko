@@ -185,10 +185,8 @@ ADTErr parcer_doCommand(Game* _game, char* _command){
 			}
 		}
 		else if (!strcmp(tokens,"solve")) {
-			if (read_args(tokens, 1, &x,&y,&z,"solve")!=ERR_OK) {
-				return ARGS_INVALID;
-			}
 			if((ret=checkMode(solveM,_game->mode))==ERR_OK){
+				tokens = check_next_tok(_command);
 				ret = solve(_game, tokens);
 			}
 		}
@@ -302,6 +300,7 @@ ADTErr parse_file (FILE* fp, Game* _game){
 				if(count == 0){
 					/* init board */
 					N = _game->rows * _game->cols;
+					//TODO if board not null need to destroy is and destroy move list
 					_game->board = create_empty_board(_game->rows, _game->cols);
 				}
 				r = count/N;

@@ -7,6 +7,7 @@
 #include "game.h"
 #include "main_aux.h"
 #include "parcer.h"
+#include <unistd.h>
 
 #include <stdlib.h>
 
@@ -46,8 +47,6 @@ int main () {
 
 	stack_destroy(l);
 */
-
-
 	int command_res = 1;
 	Game* game = NULL;
 	char commandStr[COMMAND_LEN];

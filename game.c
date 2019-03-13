@@ -158,7 +158,7 @@ ADTErr validate (Game* _game){
 
 
 /**
- * create_empty_board - creates a new empty board of the given size.
+ * s - creates a new empty board of the given size.
  * @Input
  * m - number of rows in one block
  * n - number of columns in one block
@@ -172,7 +172,6 @@ Num** create_empty_board(int _m, int _n){
 		for (j = 0; j < N; j++) {
 			board[i][j].num = 0;
 			board[i][j].status = HIDDEN;
-			/*board[i][j].alt_num=0;*/
 		}
 	}
 	return board;
@@ -255,7 +254,12 @@ ADTErr set ( Game* _game, int _col, int _row, int _dig){
 }
 
 /**
- * doing 1000 iteration else return ERROR
+ *
+ * get board in edit mode
+ * check if there is x empty cell else return ERROR
+ * run ILP if no solution found reset the board back to it originall state and choose x cell run ILP again , (do it
+ * 	max 1000 iteration else return ERROR)
+ * 	choose y randomly cells and clear the board except the y cell.
  */
 ADTErr generate (Game* _game, int _x, int _y){
 	return ERR_OK;
@@ -303,6 +307,14 @@ ADTErr redo (Game* _game){
 	return ERR_OK;
 }
 
+/**
+ * validate
+ * copy board
+ * check on the new board if each cell contains only one leagal value then update thae value on the original board
+ *
+ * create new list that contain all of the changes and append the list to game move list.
+ *
+ */
 ADTErr autofill (Game* _game){
 	return ERR_OK;
 }
@@ -371,6 +383,19 @@ void writeNumToFile (FILE* fp, Num** board, int row, int col, MODE mode) {
 	}
 }
 
+
+/**
+ * path /home/eyal/eclipse-workspace/project/temp.txt
+ *
+ * 	char* path = realpath(filename, NULL);
+	if(path == NULL){
+	    printf("cannot find file with name[%s]\n", f);
+	} else{
+	    printf("path[%s]\n", path);
+	    free(path);
+	}
+ *
+ */
 ADTErr save (Game* _game, char* _path){
 	FILE* fp;
 	int i, j;
@@ -406,8 +431,20 @@ ADTErr save (Game* _game, char* _path){
 	return ERR_OK;
 }
 
+/**
+ * all current work delete copy from edit
+ * initializes the undo/redo list.
+ */
 ADTErr solve(Game* _game, char* _path){
-	return ERR_OK;
+	ADTErr res = ERR_OK;
+	FILE* fp = fopen (_path, "r");
+	if(!fp){
+		return FILE_ERROR;
+	}
+	_game->mode = SOLVE;
+	res = parse_file(fp, _game);
+	fclose(fp);
+	return res;
 }
 
 
