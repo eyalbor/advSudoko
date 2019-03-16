@@ -337,15 +337,118 @@ ADTErr redo (Game* _game){
 	return ERR_OK;
 }
 
+/** changed
+ * number of solutions- return number of solutions for a cell
+ * @param
+ * -board
+ * int i- row of checked cell
+ * int j- col of checked cell
+ * int N- size of rows in a block* cols in a block
+ * @return
+ * number of solutions **/
+int cell_Solutions(Num** board, int blockRow, int blockCol, int i, int j){
+	int s,N,count=0;
+	N=blockRow*blockCol;
+	for (s=1; s<N+1; s++)
+	{
+		/**iterate over the values and check which value is legal. if it is legal add 1 to the counter **/
+		if(validate_digit (board, blockRow, blockCol,i, j , s))
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
+
+int find_legalValue(Num** board, int blockRow, int blockCol, int i, int j){
+	int s, count,N;
+	N=blockRow*blockCol;
+	for (s=1; s<N+1; s++)
+	{
+		/**iterate over the values and check which value is legal. if it is legal return the value **/
+		if(validate_digit (board, blockRow, blockCol,i, j , s))
+		{
+			return s;
+		}
+	}
+	return -1;
+}
+
+/*receives 2 boards and merge the first one with the second*/
+void merge_boards(Num** tobeupdated_board, Num** updating_board, int N){
+	int i,j;
+	for(i=0; i<N; i++)
+	{
+		for(j=0; j<N; j++)
+		{
+			if(updating_board[i][j].num!=0)
+			{
+				tobeupdated_board[i][j].num=updating_board[i][j].num;
+				tobeupdated_board[i][j].status=SHOWN;
+			}
+		}
+	}
+}
+
+
 /**
- * validate
+ * autofill:
  * copy board
  * check on the new board if each cell contains only one leagal value then update thae value on the original board
  *
  * create new list that contain all of the changes and append the list to game move list.
  *
  */
+
+/**changed nadz **/
+
+
 ADTErr autofill (Game* _game){
+	SingleSet* move_step;
+	Num** duplicated_board;
+	list* stepNewList;
+	int N, i, j, value;
+
+	N=_game->cols*_game->rows;
+/**if board is erroneous return error message **/
+	if (erroneous_board(_game->board,N)!= ERR_OK)
+	{
+		printf("erroneous");
+		return BOARD_ERRORS;
+	}
+	duplicated_board=create_empty_board(_game->rows,_game->cols);
+	/*printBoard2(duplicated_board, _game->rows, _game->cols);*/
+	/**create list for all the moves to be done **/
+	stepNewList = malloc(sizeof(list));
+	list_new(stepNewList, sizeof(SingleSet*) ,freeFuncSingleSet);
+	/** check whether the cell has only one legal value**/
+	for(i=0; i<N; i++)
+	{
+		for(j=0; j<N;j++)
+		{
+			if 	(( _game->board[i][j].num==0  )&&(cell_Solutions(_game->board, _game->rows, _game->cols,  i, j)==1))
+				/**if the cell has one legal value  add the move to steplist  **/
+			{
+				value=find_legalValue(_game->board, _game->rows, _game->cols,  i,  j);
+				move_step = malloc(sizeof(SingleSet));
+				setMoveStep(i, j, value, move_step, _game);
+				move_step->new_stat=SHOWN;
+				list_appendAfter(stepNewList,move_step);
+				/** update the duplicated board to save changes **/
+				duplicated_board[i][j].num=value;
+			}
+		}
+	}
+	if(_game->moveList->currentElement != NULL && _game->moveList->currentElement->next != NULL)
+	{
+	/* delete all node after the current Node*/
+	list_deleteAfter(_game->moveList);
+	}
+	/*insert the stepNewlist to the game movelist */
+	list_appendAfter(_game->moveList,stepNewList);
+	merge_boards(_game->board, duplicated_board,  N);
+	free_board2(duplicated_board, N);
 	return ERR_OK;
 }
 

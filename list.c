@@ -65,16 +65,20 @@ void list_appendAfter(list *list, void *elementToAdd){
 		    node->prev = list->currentElement;
 
 		    /* 7. Change previous of new_node's next node */
-		    if (node->next != NULL)
+		      if (node->next != NULL){
 		        node->next->prev = node;
+		    }else{
+		    	list->tail=node;
+		    }
 
 		    list->currentElement = node;
+			list->elementSize++;
 		}
 		else{
 			list_append(list,elementToAdd);
 		}
 	}
-	list->elementSize++;
+	
 
 }
 
