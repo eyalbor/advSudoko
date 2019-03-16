@@ -144,14 +144,23 @@ void list_for_each(list *list, listIterator iterator)
  * remove the head from the list
  */
 void list_removeHead(list *list){
+	 listNode* node;
 	assert(list->head != NULL);
-	listNode *node = list->head;
+	node = list->head;
 	list->head = node->next;
-	list->head->prev = NULL;
 	list->logicalLength--;
+	if(list->logicalLength!=0)
+	{
+	list->head->prev = NULL;
+	}
+	if(list->logicalLength==0)
+	{
+		list->tail=NULL;
+	}
 	/*list->currentElement = list->head;*/
 	list->freeFn(node->data);
 	free(node);
+
 }
 
 listNode* list_head(list *list)

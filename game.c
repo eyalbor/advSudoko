@@ -61,6 +61,22 @@ void free_board(Game* _game){
 		free(_game->board); /*frees all rows*/
 	 }
 }
+/**if there is no need for free_board we can delete it **/
+
+void free_board2(Num** board, int N){
+	 int i = 0;
+
+	 if(board != NULL)
+	 {
+		 for (i = 0; i < N; i++) {
+			 if(board[i] != NULL){
+				 free(board[i]); /*frees all cols*/
+			 }
+		}
+		free(board); /*frees all rows*/
+	 }
+}
+
 
 
 /**isGameFinish- checks whether the board is filled and all values are legal
@@ -125,6 +141,20 @@ Num** copy_boards (Num** old_board , int _m, int _n){
 		memcpy ( new_board [i] , old_board [i] , _m*_n);
 	}
 	return new_board;
+}
+
+
+void copy_boardsNew (Num** old_board ,Num** new_board, int _N){
+	int i,j;
+	for ( i = 0 ;  i < _N ; i++ )
+	{
+		for ( j = 0 ;  j < _N ; j++ )
+		{
+			new_board[i][j].num=old_board[i][j].num;
+			new_board[i][j].status=old_board[i][j].status;
+		}
+	}
+
 }
 
 
@@ -499,18 +529,23 @@ ADTErr edit (Game* _game, char* _parsed_command){
 ADTErr num_of_solutions (Game* _game){
 	int num_solutions , _N;
 	ADTErr err;
+	Num** duplicated_board;
+
 	_N = _game->cols * _game->rows;
 	if ( ( err = erroneous_board ( _game-> board , _N ) ) != ERR_OK )
 	{
 		return err;
 	}
 	else{
-		num_solutions = backtrack_Algo(_game->board, _game->rows , _game->cols);
+		duplicated_board=create_empty_board(_game->rows,_game->cols);
+		 copy_boardsNew (_game->board ,duplicated_board,  _N);
+
+		num_solutions = backtrack_Algo(duplicated_board, _game->rows , _game->cols);
 		printf(" number of solutions is : %d", num_solutions);
+		free_board2(duplicated_board, _N);
 	}
 	return ERR_OK;
 }
-
 /*
  * LP
  */
@@ -584,6 +619,25 @@ ADTErr printBoard(Game* _game){
 	print_dashes(_game->rows,_game->cols);
 	return ERR_OK;
 }
+/** temporart function**/
+void printBoard2(Num** board, int Brow, int Bcol){
+	int row;
+	int col;
+	for (row = 0; row < Brow*Bcol; row++){
+		if (row % Brow == 0){
+			print_dashes(Brow,Bcol);
+		}
+		for (col = 0; col < Bcol *Brow; col++) {
+			if (col % Bcol== 0)
+				printf("%s","|");
+			print_num(board[row][col], EDIT ,1);
+		}
+		printf("%c\n",'|');
+	}
+	print_dashes(Brow,Bcol);
+
+}
+
 
 ADTErr exit_game (Game* _game){
 	game_destroy(_game);
@@ -624,8 +678,8 @@ bool validate_col(Num** board, int row, int col, int checked_value, int size){
 
 bool validate_block(Num** board, int row, int col, int checked_value, int block_rowsize, int block_colsize){
 	int a, b, c, d;
-	a = (row / block_rowsize) ;
-	b = (col / block_colsize) ; /* the same with the col*/
+	a = (row / block_rowsize)*block_rowsize ;
+	b = (col / block_colsize)*block_colsize ; /* the same with the col*/
 	for (c = 0; c < block_colsize; c++)
 	{ /*  iterates over the elements in the block */
 		for (d = 0; d < block_rowsize; d++)
