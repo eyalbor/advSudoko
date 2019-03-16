@@ -160,7 +160,7 @@ void copy_boardsNew (Num** old_board ,Num** new_board, int _N){
 
 
 
-/**validate-validates the current board using ILP, ensuring it is solvable.
+/**validate-validates the current board using ILP, ensuring it is .
  * if the board is erroneous the program prints an error message and the command is not executed
  * @ Input
  * _game- the sudoko game
@@ -728,10 +728,11 @@ bool board_isSolvable(Num** board, int blockRow, int blockCol){
 	{
 		for(j=0; j<blockRow*blockCol;j++)
 		{
-			if(!validate_digit(board, blockRow, blockCol,i, j , board[i][j].num))
+			if(!validate_digit(board, blockRow, blockCol,i, j , board[i][j].num)|| (board[i][j].num==0))
 			{
 			return FALSE;
 			}
 		}
 	}return TRUE;
 }
+
