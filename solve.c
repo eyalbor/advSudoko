@@ -18,7 +18,7 @@ typedef struct stack_cell{
 	int value;
 } StackCell;
 
-void freeFuncSingleStuchCell(void * _item){
+void freeFuncSingleStackCell(void * _item){
 	free(_item);
 }
 
