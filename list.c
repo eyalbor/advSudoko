@@ -211,8 +211,11 @@ int list_redoCurrentElement(list* list){
 		else return 0;
 	}
 	else{
+		if(list_size(list)==0){
+			return 0;
+		}
 		list->currentElement = list->head;
-		return 0;
+		return 1;
 	}
 	return 1;
 }
