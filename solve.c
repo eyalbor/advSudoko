@@ -121,14 +121,12 @@ int backtrack_Algo(Num** temp_board, int block_row, int block_col)
 
 		if ((next_cell->col != -1)&&(next_cell->value != -1))
 				{
-
 					stack_push (mystack,next_cell);
 
 					row = next_cell->row;
 					col = next_cell->col ;
 					temp_board[row][col].num = next_cell->value;
 					temp_board[row][col].status=SHOWN;
-
 				}
 		else
 		{
@@ -169,16 +167,14 @@ int backtrack_Algo(Num** temp_board, int block_row, int block_col)
 				row = dummy_cell->row;
 				col = dummy_cell->col ;
 				temp_board[row][col].num = dummy_cell->value;
-
-
 			}
 		}
 
 	}
 	stack_destroy(mystack);
-	freeFuncSingleStackCell(dummy_cell);
-	freeFuncSingleStackCell(next_cell);
-	freeFuncSingleStackCell(item2);
+	free(dummy_cell);
+	free(next_cell);
+	free(item2);
 	return count;
 }
 

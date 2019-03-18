@@ -67,13 +67,6 @@ typedef struct _game{
  */
 Game* game_init();
 
-/**
- * game_destroy
- * @input
- * 	Game*
- *
- * 	clear all resources
- */
 
 /** copy boards- receive a board and duplicate it.
  * @param
@@ -86,7 +79,11 @@ Num** copy_boards ( Num** old_board , int _m, int _n);
 
 
 /**
- * free all resources and destroy the game
+ * game_destroy
+ * @input
+ * 	Game*
+ *
+ * 	clear all resources
  */
 void game_destroy(Game* _game);
 

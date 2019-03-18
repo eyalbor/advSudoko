@@ -103,7 +103,10 @@ void list_undoCurrentElement(list* list);
 
 /**
  * help function to redo
+ * @return int
+ * 		0 - if cannot redo
+ * 		1 if succeed
  */
-void list_redoCurrentElement(list* list);
+int list_redoCurrentElement(list* list);
 
 #endif

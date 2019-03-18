@@ -26,7 +26,9 @@ bool mainAux_readCommand(char* command){
 
 /**
  * each cell contain 4 char:
- * 		space char, two digits(printf "%2d") & blank is two space, '.' for fixed otherwith space, '*' for error otherwith space
+ * 		space char, two digits(printf "%2d") & blank,
+ * 		 '.' for fixed otherwith space,
+ * 		  '*' for error otherwith space
  */
 void mainAux_printBoard(Game* _game){
 	printBoard(_game);

@@ -203,13 +203,16 @@ void list_undoCurrentElement(list* list){
 	}
 }
 
-void list_redoCurrentElement(list* list){
+int list_redoCurrentElement(list* list){
 	if(list->currentElement!=NULL){
 		if(list->currentElement->next!=NULL){
 			list->currentElement = list->currentElement->next;
 		}
+		else return 0;
 	}
 	else{
 		list->currentElement = list->head;
+		return 0;
 	}
+	return 1;
 }

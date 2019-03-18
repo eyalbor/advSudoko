@@ -138,7 +138,7 @@ Num** copy_boards (Num** old_board , int _m, int _n){
 	new_board = create_empty_board ( _m ,  _n) ;
 	for ( i = 0 ;  i < _m*_n ; i++ )
 	{
-		memcpy ( new_board [i] , old_board [i] , _m*_n);
+		memcpy ( new_board [i] , old_board [i] , sizeof(Num)*_m*_n);
 	}
 	return new_board;
 }
@@ -310,8 +310,13 @@ ADTErr undo (Game* _game){
 				_game->board[ss->row][ss->col].status = ss->prev_stat;
 				sNode = sNode->next;
 			}
+			list_undoCurrentElement(_game->moveList);
+		}else{
+			return CANNOT_UNDO;
 		}
-		list_undoCurrentElement(_game->moveList);
+	}
+	else{
+		return CANNOT_UNDO;
 	}
 	return ERR_OK;
 }
@@ -322,7 +327,9 @@ ADTErr redo (Game* _game){
 	SingleSet* ss;
 
 	if(_game->moveList!=NULL){
-		list_redoCurrentElement(_game->moveList);
+		if(list_redoCurrentElement(_game->moveList) == 0){
+			return CANNOT_REDO;
+		}
 		listSteps = list_getCurrentElement(_game->moveList);
 		if(listSteps != NULL && listSteps->data != NULL){
 			sNode = list_head(listSteps->data);
@@ -333,6 +340,8 @@ ADTErr redo (Game* _game){
 				sNode = sNode->next;
 			}
 		}
+	}else{
+		return CANNOT_REDO;
 	}
 	return ERR_OK;
 }
@@ -574,6 +583,8 @@ ADTErr solve(Game* _game, char* _path){
 	if(!fp){
 		return FILE_ERROR;
 	}
+	game_destroy(_game);
+	_game = game_init();
 	_game->mode = SOLVE;
 	res = parse_file(fp, _game);
 	fclose(fp);
@@ -599,16 +610,11 @@ ADTErr change_mark_errors (Game* _game , bool _x){
 ADTErr edit (Game* _game, char* _parsed_command){
 	FILE* fp = NULL;
 	ADTErr res = ERR_OK;
-	if(_game->moveList != NULL){
-		list_destroy(_game->moveList);
-		_game->moveList = NULL;
-		_game->moveList = malloc(sizeof(list));
-		list_new(_game->moveList,sizeof(SingleSet),freeFuncSingleSet);
-	}
+
+	game_destroy(_game);
+	_game = game_init();
+
 	if(_parsed_command == NULL){ /* create empty board 9*9 */
-		if(_game->board != NULL){
-			free_board(_game);
-		}
 		_game->cols = DEF_COLS;
 		_game->rows = DEF_ROWS;
 		_game->board = create_empty_board(DEF_ROWS,DEF_COLS);
@@ -619,6 +625,7 @@ ADTErr edit (Game* _game, char* _parsed_command){
 		if(!fp){
 			return FILE_CANNOT_OPEN;
 		}
+
 		res = parse_file(fp,_game);
 		fclose(fp);
 	}
@@ -641,7 +648,7 @@ ADTErr num_of_solutions (Game* _game){
 	}
 	else{
 		duplicated_board=create_empty_board(_game->rows,_game->cols);
-		 copy_boardsNew (_game->board ,duplicated_board,  _N);
+		copy_boardsNew (_game->board ,duplicated_board,  _N);
 
 		num_solutions = backtrack_Algo(duplicated_board, _game->rows , _game->cols);
 		printf(" number of solutions is : %d", num_solutions);
