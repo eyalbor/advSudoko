@@ -57,9 +57,11 @@ void free_board(Game* _game){
 		 for (i = 0; i < N; i++) {
 			 if(_game->board[i] != NULL){
 				 free(_game->board[i]); /*frees all cols*/
+				 _game->board[i]=NULL;
 			 }
 		 }
 		 free(_game->board); /*frees all rows*/
+		 _game->board=NULL;
 	 }
 }
 /**if there is no need for free_board we can delete it **/
@@ -122,9 +124,9 @@ Game* game_init(){
 void game_destroy(Game* _game){
 	list_destroy(_game->moveList);
 	free(_game->moveList);
+	_game->moveList=NULL;
 	free_board(_game);
 	free(_game);
-	_game = NULL;
 }
 
 /** copy boards- receive a board and duplicate it.
@@ -199,9 +201,9 @@ ADTErr validate (Game* _game){
 Num** create_empty_board(int _m, int _n){
 	int i,j;
 	int N = _n * _m;
-	Num** board = (Num**)calloc(N,sizeof(Num*));
+	Num** board = (Num**)malloc(N*sizeof(Num*));
 	for (i = 0; i < N; i++) {
-		board[i] = (Num*)calloc(N,sizeof(Num));
+		board[i] = (Num*)malloc(N*sizeof(Num));
 		for (j = 0; j < N; j++) {
 			board[i][j].num = 0;
 			board[i][j].status = HIDDEN;
@@ -756,7 +758,6 @@ void printBoard2(Num** board, int Brow, int Bcol){
 
 
 ADTErr exit_game (Game* _game){
-	game_destroy(_game);
 	return EXIT;
 }
 
