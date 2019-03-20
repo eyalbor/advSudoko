@@ -23,18 +23,24 @@ void freeFuncSingleStackCell(void * _item){
 }
 
 ADTErr solve_ilp(Game* _game){
+	printf("%d",_game->cols);
 	return ERR_OK;
 }
 
 ADTErr solve_lp(Game* _game){
+	printf("%d",_game->cols);
 	return ERR_OK;
 }
 /** this functions are temporary see what I wrote in the h file **/ 
 ADTErr solve_ilpDuplicated(Game* _game, Num** temp_board){
+	printf("%d",temp_board[0][0].num);
+	printf("%d",_game->cols);
 	return ERR_OK;
 }
 
 ADTErr solve_lpDuplicated(Game* _game, Num** temp_board){
+	printf("%d",_game->cols);
+	printf("%d",temp_board[0][0].num);
 	return ERR_OK;
 }
 
@@ -146,7 +152,7 @@ int backtrack_Algo(Num** temp_board, int block_row, int block_col)
 				temp_board[row][col].num = 0;
 				if(stack_size(mystack) > 0)
 				{
-				stack_pop (mystack, item2);
+				stack_pop (mystack);
 				if(stack_size(mystack) > 0)
 					{
 					dummy_cell= (StackCell*)stack_peek(mystack);

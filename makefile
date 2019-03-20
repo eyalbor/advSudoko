@@ -1,5 +1,5 @@
 CC = gcc
-OBJS = main.o main_aux.o game.o solver.o parser.o list.o stack.o ADT_Error.o
+OBJS = main.o main_aux.o game.o solve.o parcer.o list.o stack.o ADT_Error.o
 EXEC = sudoku-console
 COMP_FLAG = -ansi -Wall -Wextra -Werror -pedantic-errors
 #GUROBI_COMP = -I/usr/local/lib/gurobi563/include
@@ -15,11 +15,11 @@ main_aux.o: main_aux.c main_aux.h bool.h macro.h ADT_Error.h game.h macro.h
 	$(CC) $(COMP_FLAG) -c $*.c
 ADT_Error.o: ADT_Error.c ADT_Error.h
 	$(CC) $(COMP_FLAG) -c $*.c
-solver.o: solver.c solver.h game.h ADT_Error.h parcer.h stack.h list.h bool.h macro.h
+solve.o: solve.c solve.h game.h ADT_Error.h parcer.h stack.h list.h bool.h macro.h
 	$(CC) $(COMP_FLAG) $(GUROBI_COMP) -c $*.c
 game.o: game.c game.h solve.h stack.h list.h bool.h macro.h ADT_Error.h parcer.h main_aux.h
 	$(CC) $(COMP_FLAG) -c $*.c
-parser.o: parser.c parser.h main_aux.h game.h solve.h list.h bool.h macro.h
+parcer.o: parcer.c parcer.h main_aux.h game.h list.h bool.h macro.h
 	$(CC) $(COMP_FLAG) -c $*.c
 list.o: list.c list.h bool.h
 	$(CC) $(COMP_FLAG) -c $*.c

@@ -24,11 +24,12 @@ void stack_push(stack *s, void *element)
   list_prepend(s->list, element);
 }
 
-void stack_pop(stack *s, void *element)
+void stack_pop(stack *s)
 {
+
 	/* don't pop an empty stack! */
 	assert(stack_size(s) > 0);
-	//node = list_head(s->list);
+	/*node = list_head(s->list);*/
 	/*element = node->data;*/
 	list_removeHead(s->list);
 }

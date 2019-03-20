@@ -134,14 +134,13 @@ void list_append(list *list, void *element)
 
 void list_for_each(list *list, listIterator iterator)
 {
-  assert(iterator != NULL);
-
-  listNode *node = list->head;
-  bool result = TRUE;
-  while(node != NULL && result) {
-    result = iterator(node->data);
-    node = node->next;
-  }
+	listNode *node = list->head;
+	bool result = TRUE;
+	assert(iterator != NULL);
+	while(node != NULL && result) {
+		result = iterator(node->data);
+		node = node->next;
+	}
 }
 
 /**

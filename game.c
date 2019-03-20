@@ -292,6 +292,7 @@ ADTErr set ( Game* _game, int _col, int _row, int _dig){
  * 	choose y randomly cells and clear the board except the y cell.
  */
 ADTErr generate (Game* _game, int _x, int _y){
+	printf("%d%d%d",_x,_y,_game->cols);
 	return ERR_OK;
 }
 
@@ -371,7 +372,7 @@ int cell_Solutions(Num** board, int blockRow, int blockCol, int i, int j){
 
 
 int find_legalValue(Num** board, int blockRow, int blockCol, int i, int j){
-	int s, count,N;
+	int s,N;
 	N=blockRow*blockCol;
 	for (s=1; s<N+1; s++)
 	{
@@ -664,6 +665,7 @@ ADTErr guess_hint(Game* _game, int _userRow, int _userCol){
 }
 
 ADTErr guess(Game* _game, float _x){
+	printf("%d%d",(int)_x,_game->cols);
 	return ERR_OK;
 }
 

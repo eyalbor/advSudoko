@@ -300,7 +300,7 @@ ADTErr parse_file (FILE* fp, Game* _game){
 				if(count == 0){
 					/* init board */
 					N = _game->rows * _game->cols;
-					//TODO if board not null need to destroy is and destroy move list
+					/*TODO if board not null need to destroy is and destroy move list*/
 					_game->board = create_empty_board(_game->rows, _game->cols);
 				}
 				r = count/N;
