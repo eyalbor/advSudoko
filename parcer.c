@@ -105,12 +105,13 @@ ADTErr read_args(char* parsed_command, int args_num, double* x, double* y, doubl
 		return ARGS_INVALID;
 
 	if(strcmp("mark_errors",func)==0){
-		if((*parsed_command!='0' || *parsed_command!='1'))
-			return ARGS_INVALID;
-		else{
+		if((*parsed_command=='0' || *parsed_command=='1')){
 			/* atof converts the string argument str to a floating-point number */
 			*x = atof(parsed_command);
 			return ERR_OK;
+		}
+		else{
+			return ARGS_INVALID;
 		}
 	}
 
@@ -310,6 +311,9 @@ ADTErr parse_file (FILE* fp, Game* _game){
 					err = validate_digit(_game->board,_game->cols,_game->rows,r,c,dig);
 					if (read_tok[strlen(read_tok)-1] == '.' && _game->mode == SOLVE){
 						((_game->board)[r][c]).status = FIXED;
+					}
+					else if(read_tok[strlen(read_tok)-1] == '*' && _game->mode == SOLVE){
+						((_game->board)[r][c]).status = ERRONEOUS;
 					}
 					else if ( err != ERR_OK){
 						((_game->board)[r][c]).status = ERRONEOUS;

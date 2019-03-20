@@ -525,6 +525,9 @@ void writeNumToFile (FILE* fp, Num** board, int row, int col, MODE mode) {
 		if (board[row][col].status == FIXED){
 			fprintf(fp,"%d.",dig);
 		}
+		else if(board[row][col].status == ERRONEOUS){
+			fprintf(fp,"%d*",dig);
+		}
 		else{
 			fprintf(fp,"%d",dig);
 		}
@@ -758,6 +761,7 @@ void printBoard2(Num** board, int Brow, int Bcol){
 
 
 ADTErr exit_game (Game* _game){
+	game_destroy(_game);
 	return EXIT;
 }
 

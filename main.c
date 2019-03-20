@@ -73,8 +73,6 @@ int main () {
 		}
 	}
 
-
-	game_destroy(game);
 	mainAux_printExit();
 	return 0;
 }
