@@ -19,14 +19,17 @@ void list_new(list *list, int elementSize, freeFunction freeFn)
 void list_destroy(list *list)
 {
   listNode *current;
-  while(list->head != NULL) {
-    current = list->head;
-    list->head = current->next;
+  listNode* next = list->head;
+  while(next != NULL) {
+    current = next;
+    next = current->next;
 
     if(list->freeFn) {
       list->freeFn(current->data);
+      current->data = NULL;
     }
     free(current);
+    current=NULL;
   }
 }
 
@@ -91,7 +94,7 @@ listNode* list_getCurrentElement(list* list){
  */
 void list_prepend(list *list, void *element)
 {
-  listNode* node = malloc(sizeof(listNode));
+  listNode* node = (listNode*)malloc(sizeof(listNode));
   node->data = element;
   node->next = list->head;
 
@@ -113,7 +116,7 @@ void list_prepend(list *list, void *element)
  */
 void list_append(list *list, void *element)
 {
-  listNode *node = malloc(sizeof(listNode));
+  listNode *node = (listNode*)malloc(sizeof(listNode));
   node->next = NULL;
   node->prev = NULL;
 

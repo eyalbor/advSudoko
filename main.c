@@ -51,7 +51,7 @@ int main () {
 	Game* game = NULL;
 	char commandStr[COMMAND_LEN];
 
-	printf("Sudoku\n------\n");
+	printf("Sudoku Game Started\n-------------------\n");
 	game = game_init();
 
 	while(command_res > 0){
@@ -72,6 +72,7 @@ int main () {
 			mainAux_printError(ENTER_COMMAND);
 		}
 	}
+
 
 	game_destroy(game);
 	mainAux_printExit();

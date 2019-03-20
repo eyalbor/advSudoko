@@ -48,17 +48,18 @@ ADTErr erroneous_board(Num** _board, int _N) {
 }
 
 void free_board(Game* _game){
-	 int i = 0;
-	 int N = _game->cols *_game->rows;
+	 int i=0;
+	 int N=0;
 
 	 if(_game->board != NULL)
 	 {
+		 N = _game->cols *_game->rows;
 		 for (i = 0; i < N; i++) {
 			 if(_game->board[i] != NULL){
 				 free(_game->board[i]); /*frees all cols*/
 			 }
-		}
-		free(_game->board); /*frees all rows*/
+		 }
+		 free(_game->board); /*frees all rows*/
 	 }
 }
 /**if there is no need for free_board we can delete it **/
@@ -107,8 +108,8 @@ bool isGameFinish(Game* _game){
 
 
 Game* game_init(){
-	Game* game = (Game*)malloc(sizeof(game));
-	game->moveList = malloc(sizeof(list));
+	Game* game = (Game*)malloc(1*sizeof(Game));
+	game->moveList = (list*)malloc(1*sizeof(list));
 	list_new(game->moveList,sizeof(list*),freeFuncStepsList);
 	game->board = NULL;
 	game->mark_error = TRUE;
@@ -120,8 +121,10 @@ Game* game_init(){
 
 void game_destroy(Game* _game){
 	list_destroy(_game->moveList);
+	free(_game->moveList);
 	free_board(_game);
 	free(_game);
+	_game = NULL;
 }
 
 /** copy boards- receive a board and duplicate it.
@@ -194,11 +197,11 @@ ADTErr validate (Game* _game){
  * n - number of columns in one block
  */
 Num** create_empty_board(int _m, int _n){
+	int i,j;
 	int N = _n * _m;
-	int i; int j;
-	Num** board = calloc(N,sizeof(Num*));
+	Num** board = (Num**)calloc(N,sizeof(Num*));
 	for (i = 0; i < N; i++) {
-		board[i] = calloc(N,sizeof(Num*));
+		board[i] = (Num*)calloc(N,sizeof(Num));
 		for (j = 0; j < N; j++) {
 			board[i][j].num = 0;
 			board[i][j].status = HIDDEN;
@@ -675,7 +678,7 @@ ADTErr guess(Game* _game, float _x){
  */
 void print_dashes(int m, int n) {
 	int i;
-	for (i=0; i<4*n*m+m+1; i++) {
+	for (i=0; i<(4*n*m+m+1); i++) {
 		printf("-");
 	}
 	printf("\n");
@@ -717,11 +720,12 @@ void print_num (Num n, MODE mode, int mark_errors) {
 ADTErr printBoard(Game* _game){
 	int row;
 	int col;
-	for (row = 0; row < _game->rows*_game->cols; row++){
+	int N = _game->rows*_game->cols;
+	for (row = 0; row < N; row++){
 		if (row % _game->rows == 0){
 			print_dashes(_game->rows,_game->cols);
 		}
-		for (col = 0; col < _game->cols *_game->rows; col++) {
+		for (col = 0; col < N; col++) {
 			if (col % _game->cols== 0)
 				printf("%s","|");
 			print_num(_game->board[row][col], _game->mode, _game->mark_error);
