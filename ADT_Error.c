@@ -43,7 +43,9 @@
 		"Puzzle is not valid - cannot be saved",
 		"Puzzle contain's error values",
 		"Invalid range",
-		"Puzzle contains value in this cell"
+		"Puzzle contains value in this cell",
+		"Ilp error",
+		"ILP_NO_SOLUTION"
 
 	};
 	if(errNum==VALIDATION_PASSED){

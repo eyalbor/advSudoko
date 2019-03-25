@@ -151,6 +151,7 @@ ADTErr read_args(char* parsed_command, int args_num, double* x, double* y, doubl
  * 		if the parameters not valid return ARGS_INVALID
  */
 ADTErr parcer_doCommand(Game* _game, char* _command){
+	
 	char* tokens;
 	ADTErr ret = INVALID_COMMAND;
 	double x = 0, y = 0, z = 0;
