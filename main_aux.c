@@ -12,7 +12,7 @@
 bool mainAux_readCommand(char* command){
 	int l=0;
 	char c;
-	fseek(stdin,0,SEEK_END);
+/*	fseek(stdin,0,SEEK_END);*/
 	if (NULL == fgets(command,COMMAND_LEN,stdin)){
 		return FALSE;
 	}

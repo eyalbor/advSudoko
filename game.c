@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "macro.h"
 #include "bool.h"
@@ -10,6 +11,12 @@
 #include "parcer.h"
 #include "main_aux.h"
 #include "solve.h"
+
+typedef struct cell_t{
+	int r;
+	int c;
+	bool touch;
+} Cell;
 
 /**
  * release func to free item from list
@@ -63,7 +70,7 @@ void free_board(Game* _game) {
 		_game->board=NULL;
 	}
 }
-/**if there is no need for free_board we can delete it **/
+
 
 void free_board2(Num** board, int N) {
 	int i = 0;
@@ -78,8 +85,12 @@ void free_board2(Num** board, int N) {
 	}
 }
 
-/**isGameFinish- checks whether the board is filled and all values are legal
- *  @Input:
+/**
+ * isGameFinish- checks whether the board is filled and all values are legal
+ *  @Input:typedef struct cell_t{
+		int r;
+		int c;
+	} Cell;
  * 	_game - the Sudoku game
  * 	@ return bool True/False
  *   **/
@@ -122,8 +133,7 @@ void game_destroy(Game* _game) {
 }
 
 /** copy boards- receive a board and duplicate it.
- * @param
- * -old board
+ * @param old board
  * int _m- size of rows in a block
  * int _n- size of cols in a block
  * @return
@@ -147,10 +157,11 @@ void copy_boardsNew(Num** old_board, Num** new_board, int _N) {
 			new_board[i][j].status=old_board[i][j].status;
 		}
 	}
-
+	/*printf("copy board\n");*/
 }
 
-/**validate-validates the current board using ILP, ensuring it is .
+/**
+ * validate-validates the current board using ILP, ensuring it is .
  * if the board is erroneous the program prints an error message and the command is not executed
  * @ Input
  * _game- the sudoko game
@@ -159,28 +170,41 @@ void copy_boardsNew(Num** old_board, Num** new_board, int _N) {
 
 ADTErr validate(Game* _game) {
 	ADTErr err;
-	int result;
 	int _N;
+	Num** backupBoard = NULL;
 	_N = _game->cols*_game->rows;
 	if ( (err = erroneous_board(_game-> board, _N) ) != ERR_OK) {
 		return err;
 	}
+	backupBoard = create_empty_board(_game->rows, _game->cols);
 	/** we still need to free the memory allocated for the board.
 	 * because the free_board function receive game and not board i'm leaving it for now until we decide
 	 * to change the function **/
-	return solve_ilp(_game, 0, 0, &result, 1);
+	err = solve_ilp(_game->board, _game->rows, _game->cols, backupBoard, 1);
+	free_board2(backupBoard, _N);
+	if (err == ERR_OK){
+		printf("board is solvable /n");
+	}else{
+		printf("board is not sovable");
+	}
+	return err;
 }
 
 /**
  * s - creates a new empty board of the given size.
  * @Input
  * m - number of rows in one block
- * n - number of columns in one block
+ * n - number of columns in one blocktypedef struct cell_t{
+	int r;
+	int c;
+} Cell;
  */
 Num** create_empty_board(int _m, int _n) {
 	int i, j;
 	int N = _n * _m;
-	Num** board = (Num**)malloc(N*sizeof(Num*));
+	Num** board = NULL;
+	/*printf("create_empty_board\n");*/
+	board = (Num**)malloc(N*sizeof(Num*));
 	for (i = 0; i < N; i++) {
 		board[i] = (Num*)malloc(N*sizeof(Num));
 		for (j = 0; j < N; j++) {
@@ -264,19 +288,304 @@ ADTErr set(Game* _game, int _col, int _row, int _dig) {
 	}
 	return ERR_OK;
 }
+ 
+/*************************** help func for generete ********************************/
+
+ADTErr checkIfThereXEmptyCell(Game* _game, int _x, int* _fillcount){
+	int i,j,N;
+	int count = 0;
+	
+	N = _game->cols *_game->rows;
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			if(_game->board[i][j].num==0){
+				++count;
+			}
+		}
+	}
+	*_fillcount = count;
+	return(count>=_x?ERR_OK:NOT_ENOUGH_EMPTY_CELL);
+}
+
+
+void swap(int* randArr, int index1, int index2){
+	int temp = randArr[index1];
+	randArr[index1] = randArr[index2];
+	randArr[index2] = temp;
+}
+
+/**
+ * Num** backupBoard,
+ * int rows,
+ * int _cols,
+ * Cell* _emptyCellArr - array contain's all indexs of empty cells in
+ * _size - _emptyCellArr length
+ * int _x - number of empty cell tp fill;
+ */
+bool backtrackingRand(Num** backupBoard, int _rows, int _cols, Cell* _emptyCellArr,int _size, int _x){
+	int* randArr = NULL;
+	int value,n, countof_Legalvalues = 0, randomized_index, cell;
+	
+	/*printf("backtrackingRand\n");*/
+	randArr = calloc(sizeof(int),_rows*_cols);
+	/*printf("x=%d\n",_x);*/
+	if(_x==0){
+		if (board_isSolvable(backupBoard,_rows,_cols)){
+			/*printf("board_isSolvable\n");*/
+			free(randArr);
+			return TRUE;
+		}
+		else{
+			/*printf("board not solvable");*/
+			free(randArr);
+			return FALSE;
+		}
+	}	
+	/*printBoard2(backupBoard,_rows, _cols);*/
+
+	cell = rand()% _size; /* check not the same i as before + touch*/
+	while(_emptyCellArr[cell].touch==1){
+		cell = rand()% _size;
+	}
+	/*printf("cell is %d \n",cell);*/
+	for (value = 1; value < (_rows*_cols+1); value++)
+	{ 
+		/*filling the array with legal values.*/
+		if (validate_digit(backupBoard, _rows, _cols, _emptyCellArr[cell].r, _emptyCellArr[cell].c, value) == TRUE)
+		{
+			randArr[countof_Legalvalues] = value;
+			countof_Legalvalues++;
+			/*printf("legal value  [%d %d] = %d \n",_emptyCellArr[cell].r,_emptyCellArr[cell].c,value);*/
+		}
+	}
+
+	while (countof_Legalvalues > 1) {
+		/*printf("count is bigger than 1\n	");*/
+		/*randomly picking and recursively calling the function.
+		we have several options and we want to check if one of them is legal solution*/
+
+			randomized_index = rand() % countof_Legalvalues;
+			/* as the array with the legal indexes is filled from the first cell it ensures that the size is the
+			 * count of legal values and the array is empty from the end until 9 minus count of legal values.
+			 * choose randomly an index from legal values  */
+			backupBoard[_emptyCellArr[cell].r][_emptyCellArr[cell].c].num = randArr[randomized_index];
+			backupBoard[_emptyCellArr[cell].r][_emptyCellArr[cell].c].status = SHOWN;
+			/*printf("value chosen randomly %d \n",(randArr[randomized_index]));*/
+			/*printBoard2(backupBoard,_rows, _cols);	*/
+			for (n = randomized_index; n < countof_Legalvalues-1; n++){
+				swap(randArr, n, n+1);
+			}
+			countof_Legalvalues--;
+			/*now we have one less valid value.*/
+			_emptyCellArr[cell].touch = 1;
+			if (backtrackingRand(backupBoard, _rows, _cols,_emptyCellArr,_size,--_x) == 1)
+			{
+				free(randArr);
+				return TRUE;
+			} 
+			else
+			{
+				backupBoard[_emptyCellArr[cell].r][_emptyCellArr[cell].c].num = 0;
+				backupBoard[_emptyCellArr[cell].r][_emptyCellArr[cell].c].status = SHOWN;
+				/*printBoard2(backupBoard,_rows, _cols);*/
+				/*delete the value and try again recursivly to check the other options  */
+			}
+	}
+	if (countof_Legalvalues == 1)
+	{ 
+		/*no need for choosing a value in randomized way as only one is remain.*/
+		/*printf("count legal v ==1");*/
+		backupBoard[_emptyCellArr[cell].r][_emptyCellArr[cell].c].num = randArr[0];
+		backupBoard[_emptyCellArr[cell].r][_emptyCellArr[cell].c].status = SHOWN;
+		/*printBoard2(backupBoard,_rows, _cols);*/
+		countof_Legalvalues=0;
+		if (backtrackingRand(backupBoard, _rows, _cols,_emptyCellArr,_size,--	_x) == TRUE)
+		{
+			/* after putting the remained value check if matrix can be solved */
+			free(randArr);
+			return TRUE;
+		}
+		else
+		{
+			backupBoard[_emptyCellArr[cell].r][_emptyCellArr[cell].c].num = 0;
+			backupBoard[_emptyCellArr[cell].r][_emptyCellArr[cell].c].status = HIDDEN;
+			/*printBoard2(backupBoard,_rows, _cols);*/
+		}
+	}
+	if (countof_Legalvalues == 0)
+	{ /*all values failed for this cell.*/
+		/*printf("count legal v ==0");*/
+		backupBoard[_emptyCellArr[cell].r][_emptyCellArr[cell].c].status = HIDDEN;
+		/*printBoard2(backupBoard,_rows, _cols);*/
+		free(randArr);
+		return FALSE;
+		/* no value remain is a valid one so no  */
+	}
+	/*printf("board_is Not Solvable\n");*/
+	free(randArr);
+	return FALSE;
+}
+
+
+/**
+ * fill X empty cell, with random valid number
+ */
+ADTErr fillXCellRand(Num** backupBoard, int _rows, int _cols, int _x, Cell* _emptyCellArr, int _size){
+	/* initialize random seed: */
+	bool ret;
+	/*printf("fillXCellRand\n");*/
+	srand (time(NULL));
+	ret = backtrackingRand(backupBoard, _rows, _cols, _emptyCellArr, _size, _x);
+	return (ret == TRUE ? ERR_OK : BOARD_IS_NOT_SOLVED);
+}
+
+void swapCell(Cell* randArr, int index1, int index2){
+	int c, r;
+	c = randArr[index1].r;
+	r = randArr[index1].c;
+	randArr[index1].r = randArr[index2].r;
+	randArr[index1].c = randArr[index2].c;
+	randArr[index2].r = r;
+	randArr[index2].c = c;
+}
+
+void clearBoardExceptYCell(Game* _game, int _N, int _y){
+	int i,j, count, cell, countfill = 0;
+	Cell* emptyCellArr = NULL;
+	
+	/* count the number of cell that are not 0 */
+	for(i = 0; i < _N; i++){
+		for(j = 0 ; j < _N; j++){
+			if(_game->board[i][j].num != 0){
+				++countfill;
+			}
+		}
+	}
+	/*printf("countfill %d\n", countfill);*/
+	
+	if(countfill > 0){
+		if(_y > countfill){
+			/* we will clear the all board */
+			_y = countfill;
+		}
+		count = 0;
+		/*printf("clearBoardExceptYCell malloc \n");*/
+		emptyCellArr = (Cell*)calloc(sizeof(Cell), countfill);
+		/*create arr of cell that are not 0*/
+		for(i = 0; i < _N; i++){
+			for(j = 0 ; j < _N; j++){
+				if(_game->board[i][j].num != 0){
+					emptyCellArr[count].c = j;
+					emptyCellArr[count].r = i;
+					count++;
+				}
+			}
+		}
+		srand(time(NULL));
+		/*printf("address : %p\n",(void*)emptyCellArr);*/
+		while(_y > 0){
+			cell = rand() % countfill;
+			/*printf("cell %d\n", cell);*/
+			_game->board[emptyCellArr[cell].r][emptyCellArr[cell].c].num = 0;
+			_game->board[emptyCellArr[cell].r][emptyCellArr[cell].c].status = HIDDEN;
+			for (i = cell; i < countfill-1;i++){
+				swapCell(emptyCellArr,i,i+1);
+			}
+			--countfill;
+			--_y;
+		}
+	}
+
+	/*printf("address : %p\n",(void*)emptyCellArr);*/
+	free(emptyCellArr);
+	list_destroy(_game->moveList);
+	list_new(_game->moveList, sizeof(list*), freeFuncStepsList);
+}
+
+void getAllEmptyCell(Game* _game, Cell* emptyCellArr){
+	int i, j, N;
+	int count = 0;
+	N = _game->cols *_game->rows;
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			if(_game->board[i][j].num == 0){
+				emptyCellArr[count].c = j;
+				emptyCellArr[count].r = i;
+				/*printf("empty num %d (%d,%d)\n",count,i,j);*/
+				count++;
+			}
+		}
+	}
+}
 
 /**
  *
  * get board in edit mode
  * check if there is x empty cell else return ERROR
- * run ILP if no solution found reset the board back to it originall state and choose x cell run ILP again , (do it
- * 	max 1000 iteration else return ERROR)
- * 	choose y randomly cells and clear the board except the y cell.
+ * run ILP if no solution found reset the board back to it original state and choose x cell run ILP again , (do it
+ * max 1000 iteration else return ERROR)
+ * choose y randomly cells and clear the board except the y cell.
  */
 ADTErr generate(Game* _game, int _x, int _y) {
-	printf("%d%d%d", _x, _y, _game->cols);
-	return ERR_OK;
+	Num** backupBoard = NULL;
+	Num** backupBoard2 = NULL;
+	int i=0, count=0, N;
+	ADTErr err = ERR_OK;
+	Cell* emptyCellArr = NULL;
+	
+	/*printf("generete\n");*/
+	
+	N = _game->cols*_game->rows;
+	if( ERR_OK != checkIfThereXEmptyCell(_game, _x, &count)){
+		return NOT_ENOUGH_EMPTY_CELL;
+	}
+	/*printf("empty cell %d\n", count);*/
+	if (erroneous_board(_game->board, N) != ERR_OK) {
+		printf("error board %d\n", count);
+		return BOARD_ERRORS;
+	}
+	/*printf("generate malloc \n");*/
+	backupBoard = create_empty_board(_game->rows, _game->cols);
+	backupBoard2 = create_empty_board(_game->rows, _game->cols);
+	/*check if sudoku solvable run ilp*/
+	if( solve_ilp(_game->board, _game->rows, _game->cols, backupBoard, 0) != ERR_OK){
+		free_board2(backupBoard, _game->rows*_game->cols);
+		return BOARD_IS_NOT_SOLVED;
+	}
+	/*printf("board is solvable\n");*/
+	/*printf("generate emptyCellArr malloc\n");*/
+	emptyCellArr = (Cell*)calloc(sizeof(Cell), count);
+	getAllEmptyCell(_game, emptyCellArr);
+	
+	while (i < GENERATE_ITE){
+		copy_boardsNew(_game->board, backupBoard, N);
+		if(fillXCellRand(backupBoard, _game->rows, _game->cols , _x, emptyCellArr, count)==ERR_OK){
+			/*printf("board is solvable exit backtracking");*/
+			/*printBoard2(backupBoard,_game->rows, _game->cols);*/
+			err = solve_ilp(backupBoard, _game->rows, _game->cols, backupBoard2, 0);
+			/*printf("after ilp backupBoard2\n");
+			printBoard2(backupBoard2,_game->rows, _game->cols);*/
+			if(err == ERR_OK){
+				/* need to copy values to board */
+				copy_boardsNew(backupBoard, _game->board, N);
+				/* printf("after copy board game board\n");
+				printBoard2(_game->board,_game->rows, _game->cols);
+				*/
+				clearBoardExceptYCell(_game, N, _y);
+				break;
+			}
+		}
+		i++;
+		/*printf("i = %d",i);*/
+	}
+	
+	free_board2(backupBoard, _game->rows * _game->cols);
+	free_board2(backupBoard2, _game->rows * _game->cols);
+	free(emptyCellArr);
+	return err;
 }
+
+/********************************************* end generate funcs **********************/
 
 ADTErr undo(Game* _game) {
 	listNode* listSteps; /* data is list* */
@@ -432,48 +741,51 @@ ADTErr autofill(Game* _game) {
 	return ERR_OK;
 }
 
-ADTErr generalHint(Game* _game, int _userRow, int _userCol, bool isilp, int* result) {
+ADTErr generalHint(Game* _game, int _userRow, int _userCol, bool _isilp, Num** _backupBoard) {
 
-	int res;
-	int N = _game->cols*_game->rows;
+	ADTErr err;
+	int N;
+	 N = _game->cols*_game->rows;
 	/*errors*/
+	
 	if (_userCol < 0 || _userRow < 0 || _userCol >= N || _userRow >= N) {
 		return INVALID_RANGE;
 	}
 	if (erroneous_board(_game->board, N)!= ERR_OK) {
 		return BOARD_ERRORS;
 	}
-	if (_game->board[_userRow][_userCol].status == FIXED) {
+	if (_game->board[_userCol][_userRow].status == FIXED) {
 		return CELL_FIX;
 	}
-	if (_game->board[_userRow][_userCol].num != 0) {
+	if (_game->board[_userCol][_userRow].num != 0) {
 		return CELL_HAVE_VALUE;
 	}
-	if (isilp) {
-		res = solve_ilp(_game, _userRow, _userCol, result, 0);
+	if (_isilp) {
+		err = solve_ilp(_game->board, _game->rows, _game->cols, _backupBoard, 0);
 	} else {
-		res = solve_lp(_game);
+		err = solve_lp(_game);
 	}
-	if (res != ERR_OK) {
+	if (err != ERR_OK) {
 		return BOARD_IS_NOT_SOLVED;
 	}
 
-	mainAux_printHint(res);
+	mainAux_printHint(err);
 	return ERR_OK;
 }
 
 /* ilp */
-ADTErr hint(Game* _game, int _userRow, int _userCol) {
-	int result;
+ADTErr hint(Game* _game, int _userCol, int _userRow) {
 	ADTErr err;
-	result = -1;
-	err = generalHint(_game, _userRow, _userCol, TRUE, &result);
-	if (err==ERR_OK && result!=-1) {
-		printf("Hint for cell [%d,%d] = %d", _userCol, _userRow, result);
+	Num** backupBoard = create_empty_board(_game->rows, _game->cols);
+	
+	err = generalHint(_game, _userRow-1, _userCol-1, TRUE, backupBoard);
+	if (err == ERR_OK) {
+		printf("hint for cell [%d,%d] is %d ",_userCol, _userRow,backupBoard[_userRow-1][_userCol-1].num);
 	}
+	/*printBoard2(backupBoard, _game->rows, _game->cols);*/
+	free_board2(backupBoard, _game->rows*_game->cols);
 	return err;
 }
-
 /**
  * writeNumToFile writes the number in a required cell to a given file.
  * @Input
@@ -504,6 +816,8 @@ void writeNumToFile(FILE* fp, Num** board, int row, int col, MODE mode) {
 
 /**
  * path /home/eyal/eclipse-workspace/project/temp.txt
+ * 
+ * /a/home/cc/students/cs/eyalborovsky/workspace/sudoko/temp.txt 
  *
  * 	char* path = realpath(filename, NULL);
  if(path == NULL){
@@ -549,7 +863,8 @@ ADTErr save(Game* _game, char* _path) {
 }
 
 /**
- * all current work delete copy from edit
+ * solve 	
+ * all current work delete copy from editboard_isSolvable
  * initializes the undo/redo list.
  */
 ADTErr solve(Game* _game, char* _path) {
@@ -631,8 +946,12 @@ ADTErr num_of_solutions(Game* _game) {
  * LP
  */
 ADTErr guess_hint(Game* _game, int _userRow, int _userCol) {
-	int result =-1;
-	return generalHint(_game, _userRow, _userCol, FALSE, &result);
+	ADTErr err = ERR_OK;
+	Num** backupBoard = create_empty_board(_game->rows, _game->cols);
+	err = generalHint(_game, _userRow, _userCol, FALSE, backupBoard);
+	free_board2(backupBoard, _game->rows*_game->cols);
+	return err;
+	
 }
 
 /*
@@ -675,7 +994,7 @@ void print_num(Num n, MODE mode, int mark_errors) {
 		break;
 	case FIXED:
 		if (mode == SOLVE)
-			printf(" %2d.", n.num);
+			printf(".%2d.", n.num);
 		else
 			printf(" %2d ", n.num);
 		break;
@@ -782,8 +1101,7 @@ bool validate_block(Num** board, int row, int col, int checked_value,
  * TRUE - if all validations succeeded
  */
 
-bool validate_digit(Num** board, int blockRow, int blockCol, int cell_row,
-		int cell_col, int _dig) {
+bool validate_digit(Num** board, int blockRow, int blockCol, int cell_row, int cell_col, int _dig) {
 	int size;
 	size=blockCol*blockRow;
 	if (_dig == 0)
@@ -801,8 +1119,7 @@ bool board_isSolvable(Num** board, int blockRow, int blockCol) {
 	int i, j;
 	for (i=0; i<blockRow*blockCol; i++) {
 		for (j=0; j<blockRow*blockCol; j++) {
-			if (!validate_digit(board, blockRow, blockCol, i, j,
-					board[i][j].num)|| (board[i][j].num==0)) {
+			if (!validate_digit(board, blockRow, blockCol, i, j, board[i][j].num)) {
 				return FALSE;
 			}
 		}

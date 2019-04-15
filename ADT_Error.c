@@ -45,7 +45,7 @@
 		"Invalid range",
 		"Puzzle contains value in this cell",
 		"Ilp error",
-		"ILP_NO_SOLUTION"
+		"ILP_NO_SOLUTION",
 
 	};
 	if(errNum==VALIDATION_PASSED){

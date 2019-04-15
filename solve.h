@@ -5,13 +5,11 @@
  * solve_ilp - solves Sudoku board with ILP using Gurobi.
  * @Input
  * 	_game
- * int _userRow,
- * int _userCol,
- * int* _result,
+ * Num** _backupBoard - to fill the result to this board
  * int func : 0 - hint, 1 - validate , 2 - generate
  * @Return ADTErr
  */
-ADTErr solve_ilp(Game* _game, int _userRow, int _userCol, int* _result, int func);
+ADTErr solve_ilp(Num** _Board, int row, int col, Num** _backupBoard, int func);
 
 /**
  * solve_lp - solves Sudoku board with LP

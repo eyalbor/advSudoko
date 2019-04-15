@@ -388,6 +388,8 @@ ADTErr exit_game (Game* _game);
  */
 Num** create_empty_board(int _m, int _n);
 
+void printBoard2(Num** board, int Brow, int Bcol);
+
 bool validate_digit(Num** board, int blockRow, int blockCol,int cell_row, int cell_col , int _dig);
 
 bool board_isSolvable(Num** board, int blockRow, int blockCol);
